@@ -3,9 +3,9 @@
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
       <h1>Cache thing</h1>
-      <button @click="$store.dispatch('toggleDark')">Toggle theme</button>
+      <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
+      <button @click="chooseDumpDir">Select Dump Directory</button>
       <button @click="scanDump">Scan Dump</button>
-      <button @click="chooseDumpDir">Change Dump Directory</button>
       <br>
       <br>
       <div style="opacity:0.3;">Dump Dir:</div>
@@ -33,6 +33,7 @@
         v-for="(i, index) of content"
         :key="index"
         class="image"
+        @click="click(i)"
         :style="{ 'background-image': `url(${dumpDirectory}/${i.dumpKey})` }"
       ></div>
     </div>
@@ -44,7 +45,6 @@
 
 <script>
 import drivelist from "drivelist";
-import SystemInformation from "./LandingPage/SystemInformation";
 import { promisify } from "util";
 const { dialog } = require("electron").remote;
 const Path = require("path");
@@ -60,23 +60,23 @@ const chokidar = require("chokidar");
 
 export default {
   name: "landing-page",
-  components: { SystemInformation },
   mounted() {
     // set default dump directory
-    this.dumpDirectory =
-      Path.join(os.homedir(), `Documents`)
-        .split("\\")
-        .join("/") + "/_cache_dump_";
-
-    this.scanDump();
+    // this.dumpDirectory =
+    //   Path.join(os.homedir(), `Documents`)
+    //     .split("\\")
+    //     .join("/") + "/_cache_dump_";
+    // this.scanDump();
   },
   computed: {
     content() {
-      const everything = Object.keys(this.fileIndex).map(item => {
-        if (item.type === "unknown" || item.type === "gzip") return false;
-        return this.fileIndex[item];
-      });
-      return everything.sort((a, b) => a.created < b.created);
+      const everything = Object.keys(this.fileIndex).map(
+        item => this.fileIndex[item]
+      );
+      const filter = everything.filter(
+        item => item.type && item.type != "unknown" && item.type != "gzip"
+      );
+      return filter.sort((a, b) => a.created < b.created);
     }
   },
   data() {
@@ -106,6 +106,9 @@ export default {
     }
   },
   methods: {
+    click(item) {
+      console.log(item);
+    },
     initWatchers() {
       for (let dir of this.watchDirectories) {
         const watcher = chokidar.watch(this.appPath(dir), { persistent: true });
@@ -138,17 +141,26 @@ export default {
 
     scanDump() {
       return new Promise(async (resolve, reject) => {
+        this.currentTask = `Preparing to scan cache directory...`;
         const content = await readdir(this.dumpDirectory);
         if (content)
           for (let i of content) {
-            const stats = await stat(this.dumpDirectory + "/" + i);
+            this.currentTask = `Reading File: ${i}`;
+
+            let fullPath = this.dumpDirectory + "/" + i;
+
+            const buffer = readChunk.sync(fullPath, 0, fileType.minimumBytes);
+            const _type = fileType(buffer);
+            if (_type && !this.foundFiletypes.includes(_type.mime))
+              this.foundFiletypes.push(_type.mime);
+
+            const stats = await stat(fullPath);
 
             let splitName = i.split("__");
             let platform = splitName[0];
             let id = splitName[1];
             let timestamp = splitName[2].split(".")[0];
             let type = splitName[2].split(".")[1];
-            console.log(result);
             let result = {
               // originLocation: location,
               dumpKey: i,
@@ -156,6 +168,7 @@ export default {
               created: stats["ctime"],
               size: stats["size"]
             };
+            console.log(i);
 
             this.fileIndex[i] = result;
           }
@@ -178,11 +191,9 @@ export default {
         let absoluteLocation = this.appPath(directoryName) + "/";
 
         this.currentTask = `Indexing cache directory for ${directoryName}`;
-        console.log(absoluteLocation);
         const directoryItems = await readdir(absoluteLocation);
         this.totalAnalysing = directoryItems.length;
         for (let i of directoryItems) {
-          console.log(i);
           await this.processItem(directoryName, absoluteLocation + i, i);
         }
         this.currentTask = false;
@@ -192,7 +203,7 @@ export default {
     },
     async processItem(directoryName, location, name) {
       try {
-        this.currentTask = `Processing ${name}`;
+        this.currentTask = `Checking ${name}`;
         const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
         const _type = fileType(buffer);
         if (_type && !this.foundFiletypes.includes(_type.mime))
@@ -219,11 +230,10 @@ export default {
 
         if (this.fileIndex.hasOwnProperty(result.dumpKey)) return;
 
+        this.currentTask = `Copying file to dump: ${name}`;
+
         this.fileIndex[fileKey] = result;
         this.totalAnalysed += 1;
-
-        // if not already in dump, move to dump
-        // TODO CHECK DUMP
 
         await copyFile(
           location,
@@ -268,6 +278,11 @@ body {
   background: #303030;
   float: left;
   background-size: cover;
+  cursor: pointer;
+  transition: 100ms;
+}
+.image:hover {
+  opacity: 0.7;
 }
 #wrapper {
   /* background: radial-gradient(
