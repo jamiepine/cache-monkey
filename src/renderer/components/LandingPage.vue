@@ -32,7 +32,7 @@
       <button class="coolbtn margin-vertical warning" @click="chooseWatchDir">Purge Cache</button>
       <button class="coolbtn margin-vertical danger" @click="chooseWatchDir">Purge Cache & Dump</button>
     </div>
-    <div class="content" :class="{'no-interact opacity-low':contentLength}">
+    <div class="content">
       <div
         v-for="(i, index) of content"
         :key="index"
@@ -70,50 +70,7 @@ export default {
   components: {
     Input
   },
-  created() {
-    // set default dump directory
-    let userDir = Path.join(os.homedir())
-      .split("\\")
-      .join("/");
 
-    let dumpDir = `${userDir}/CacheMonkeyDump`;
-    let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
-    if (os.platform() === "darwin") {
-      discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
-    }
-    let ready = true;
-    console.log(discordCacheDir);
-
-    fs.exists(dumpDir, exists => {
-      if (exists) {
-        this.dumpDirectory = dumpDir;
-      } else {
-        // create dump folder
-        fs.mkdir(dumpDir, err => {
-          if (err) {
-            this.currentTask = "Failed to create dump directory.";
-            ready = false;
-          }
-          this.dumpDirectory = dumpDir;
-        });
-      }
-    });
-
-    fs.exists(discordCacheDir, exists => {
-      if (exists) {
-        this.watchDirectories.push({
-          name: "discord",
-          dir: discordCacheDir
-        });
-      } else {
-        this.currentTask = "Could not find Discord cache, please add manually.";
-        ready = false;
-      }
-    });
-    if (ready) {
-      this.scanDump();
-    }
-  },
   computed: {
     ...mapState([
       "fileIndex",
@@ -211,15 +168,17 @@ export default {
       const everything = Object.keys(this.fileIndex).map(
         item => this.fileIndex[item]
       );
-      const filter = everything.filter(
-        item => {
-          if (this.currentFilter) {
-            return item.type && item.type != "unknown" && (this.currentFilter && item.type == this.currentFilter)
-          } else {
-            return item.type && item.type != "unknown" && item.type != "gzip"
-          }
-        } 
-      );
+      const filter = everything.filter(item => {
+        if (this.currentFilter) {
+          return (
+            item.type &&
+            item.type != "unknown" &&
+            (this.currentFilter && item.type == this.currentFilter)
+          );
+        } else {
+          return item.type && item.type != "unknown" && item.type != "gzip";
+        }
+      });
       // if (filter.length === 0)
       //   for (let i = 0; i < 50; i++) {
       //     filter.push({
@@ -231,6 +190,9 @@ export default {
     contentLength() {
       return Object.keys(this.fileIndex).map(item => this.fileIndex[item])
         .length;
+    },
+    autoStart() {
+      return this.$store.state.autoStart;
     }
   },
   data() {
@@ -245,6 +207,9 @@ export default {
     dirScanComplete() {
       this.initWatchers();
       setTimeout(() => (this.watchBlocker = false), 5000);
+    },
+    autoStart() {
+      this.scanDump();
     }
   },
   methods: {
@@ -299,7 +264,7 @@ export default {
           const content = await readdir(this.dumpDirectory);
           if (content)
             for (let i of content) {
-              this.currentTask = `Reading File: ${i}`;
+              this.currentTask = `Loading Dump: ${i}`;
 
               let fullPath = this.dumpDirectory + "/" + i;
 
@@ -307,8 +272,9 @@ export default {
               const _type = fileType(buffer);
               const dupeTypes = [];
 
-              for (let i = this.foundFiletypes.length; i --> 0;) {
-                  if (_type && this.foundFiletypes[i].type == _type.mime) dupeTypes.push(_type.mime);
+              for (let i = this.foundFiletypes.length; i-- > 0; ) {
+                if (_type && this.foundFiletypes[i].type == _type.mime)
+                  dupeTypes.push(_type.mime);
               }
 
               if (_type && dupeTypes.length <= 0)
@@ -372,8 +338,9 @@ export default {
         const _type = fileType(buffer);
         const dupeTypes = [];
 
-        for (let i = this.foundFiletypes.length; i --> 0;) {
-            if (_type && this.foundFiletypes[i].type == _type.mime) dupeTypes.push(_type.mime);
+        for (let i = this.foundFiletypes.length; i-- > 0; ) {
+          if (_type && this.foundFiletypes[i].type == _type.mime)
+            dupeTypes.push(_type.mime);
         }
 
         if (_type && dupeTypes.length <= 0)
@@ -428,15 +395,16 @@ export default {
         type.filtered = false;
         return;
       }
-      
+
       const filteredTypes = [];
 
-      for (let i = this.foundFiletypes.length; i --> 0;) {
-          if (this.foundFiletypes[i].filtered) this.foundFiletypes[i].filtered = false;
+      for (let i = this.foundFiletypes.length; i-- > 0; ) {
+        if (this.foundFiletypes[i].filtered)
+          this.foundFiletypes[i].filtered = false;
       }
 
       type.filtered = true;
-      this.currentFilter = type.type.split('/')[1];
+      this.currentFilter = type.type.split("/")[1];
     }
   }
 };

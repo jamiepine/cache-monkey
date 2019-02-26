@@ -24,6 +24,7 @@ export default new Vuex.Store({
     dumpScanComplete: false,
     dirScanComplete: false,
     watchBlocker: true,
+    autoStart: false,
     // tooltips 
     tooltipDefault: {
       placement: 'top',

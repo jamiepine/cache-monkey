@@ -7,16 +7,71 @@
 
 <script>
 import Sidebar from "./components/Sidebar/Sidebar";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
+import drivelist from "drivelist";
+import { promisify } from "util";
+const { dialog } = require("electron").remote;
+const Path = require("path");
+const fs = require("fs");
+const readChunk = require("read-chunk");
+const fileType = require("file-type");
+const os = require("os");
+const readdir = promisify(fs.readdir);
+const copyFile = promisify(fs.copyFile);
+const rename = promisify(fs.rename);
+const stat = promisify(fs.stat);
+const chokidar = require("chokidar");
 
 export default {
   name: "cachemonkey",
   components: {
     Sidebar
   },
-  created() {
-    // call method when app is created to build the styles
+  async created() {
     this.initGlobalStyleVariables();
+    // set default dump directory
+    let userDir = Path.join(os.homedir())
+      .split("\\")
+      .join("/");
+
+    let dumpDir = `${userDir}/CacheMonkeyDump`;
+    let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
+    if (os.platform() === "darwin") {
+      discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
+    }
+    let ready = true;
+    console.log(discordCacheDir);
+
+    const dumpExists = await fs.statSync(dumpDir);
+
+    if (dumpExists) {
+      this.dumpDirectory = dumpDir;
+    } else {
+      // create dump folder
+      fs.mkdir(dumpDir, err => {
+        if (err) {
+          this.currentTask = "Failed to create dump directory.";
+          ready = false;
+        }
+        this.dumpDirectory = dumpDir;
+      });
+    }
+
+    const discordCacheExists = await fs.statSync(discordCacheDir);
+
+    if (discordCacheExists) {
+      this.watchDirectories.push({
+        name: "discord",
+        dir: discordCacheDir
+      });
+    } else {
+      this.currentTask = "Could not find Discord cache, please add manually.";
+      ready = false;
+    }
+
+    if (ready) {
+      this.$store.state.autoStart = true;
+    }
   },
   methods: {
     // this method appends a <style> element with the current theme varibales at the end of the <body>
@@ -45,7 +100,99 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getTheme", "getThemeName"])
+    ...mapGetters(["getTheme", "getThemeName"]),
+    ...mapState([
+      "fileIndex",
+      "dumpDirectory",
+      "watchDirectories",
+      "foundFiletypes",
+      "currentTask",
+      "totalAnalysing",
+      "totalAnalysed",
+      "dumpScanComplete",
+      "dirScanComplete",
+      "watchBlocker"
+    ]),
+    fileIndex: {
+      get() {
+        return this.$store.state.fileIndex;
+      },
+      set(value) {
+        this.$store.state.fileIndex = value;
+      }
+    },
+    dumpDirectory: {
+      get() {
+        return this.$store.state.dumpDirectory;
+      },
+      set(value) {
+        this.$store.state.dumpDirectory = value;
+      }
+    },
+    watchDirectories: {
+      get() {
+        return this.$store.state.watchDirectories;
+      },
+      set(value) {
+        this.$store.state.watchDirectories = value;
+      }
+    },
+    foundFiletypes: {
+      get() {
+        return this.$store.state.foundFiletypes;
+      },
+      set(value) {
+        this.$store.state.foundFiletypes = value;
+      }
+    },
+    currentTask: {
+      get() {
+        return this.$store.state.currentTask;
+      },
+      set(value) {
+        this.$store.state.currentTask = value;
+      }
+    },
+    totalAnalysing: {
+      get() {
+        return this.$store.state.totalAnalysing;
+      },
+      set(value) {
+        this.$store.state.totalAnalysing = value;
+      }
+    },
+    totalAnalysed: {
+      get() {
+        return this.$store.state.totalAnalysed;
+      },
+      set(value) {
+        this.$store.state.totalAnalysed = value;
+      }
+    },
+    dumpScanComplete: {
+      get() {
+        return this.$store.state.dumpScanComplete;
+      },
+      set(value) {
+        this.$store.state.dumpScanComplete = value;
+      }
+    },
+    dirScanComplete: {
+      get() {
+        return this.$store.state.dirScanComplete;
+      },
+      set(value) {
+        this.$store.state.dirScanComplete = value;
+      }
+    },
+    watchBlocker: {
+      get() {
+        return this.$store.state.watchBlocker;
+      },
+      set(value) {
+        this.$store.state.watchBlocker = value;
+      }
+    }
   },
   watch: {
     // when theme changes in the store,
