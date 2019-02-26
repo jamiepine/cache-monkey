@@ -25,7 +25,7 @@
     "postinstall": "electron-builder install-app-deps && npm run lint:fix"
   },
   "build": {
-    "productName": "space",
+    "productName": "Cache Monkey",
     "appId": "com.jamiepine.cachemonkey",
     "directories": {
       "output": "build"
@@ -59,6 +59,11 @@
     }
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.7.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-brands-svg-icons": "^5.7.2",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
+    "@fortawesome/vue-fontawesome": "^0.1.5",
     "axios": "^0.18.0",
     "bluebird": "^3.5.3",
     "chokidar": "^2.1.2",
@@ -70,8 +75,10 @@
     "remote": "^0.2.6",
     "sqlite3": "^4.0.6",
     "util": "^0.11.1",
+    "v-tippy": "^2.0.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
+    "vue-fontawesome": "0.0.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0"

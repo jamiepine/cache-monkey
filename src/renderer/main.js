@@ -6,7 +6,22 @@ import router from './router';
 import store from './store';
 
 // import '../logic/database/database';
+// Font Awesome Libraries
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faEnvelope, faMagic, faHeart } from '@fortawesome/free-solid-svg-icons'
+import { faTwitter, faLinkedinIn, faTwitch } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+library.add({
+  faTwitter,
+  faLinkedinIn,
+  faTwitch,
+  faEnvelope,
+  faMagic,
+  faHeart
+});
+
+Vue.component('icon', FontAwesomeIcon);
 
 
 // import dao from '../logic/database/dao'

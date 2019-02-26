@@ -6,12 +6,7 @@
       <h1>Cache Monkey</h1>
       <small>by Jamie Pine</small>
       <br>
-      <Input
-        :value="currentTask"
-        @update="(value) => text = value"
-        :big="false"
-        :loading="loading"
-      />
+      <Input :value="currentTask" @update="(value) => text = value" :big="false"/>
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
       <button class="coolbtn margin-vertical" @click="scanDump">Load Data</button>
       <br>
@@ -37,12 +32,7 @@
       {{!watchBlocker}}-->
       <br>
       <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
-      <Input
-        :value="dumpDirectory"
-        @update="(value) => text = value"
-        :big="true"
-        :loading="loading"
-      />
+      <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
       <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
       <div class="flex">
         <div
@@ -86,6 +76,7 @@ const stat = promisify(fs.stat);
 const chokidar = require("chokidar");
 
 import Input from "./Input";
+import { mapState } from "vuex";
 
 export default {
   name: "landing-page",
@@ -94,13 +85,109 @@ export default {
   },
   mounted() {
     // set default dump directory
-    // this.dumpDirectory =
-    //   Path.join(os.homedir(), `Documents`)
-    //     .split("\\")
-    //     .join("/") + "/_cache_dump_";
+    let defaultDir =
+      Path.join(os.homedir())
+        .split("\\")
+        .join("/") + "/_cache_dump_";
+
+    fs.exists("defaultDir", err => {
+      if (err) confirm.log(err);
+    });
     // this.scanDump();
   },
   computed: {
+    ...mapState([
+      "fileIndex",
+      "dumpDirectory",
+      "watchDirectories",
+      "foundFiletypes",
+      "currentTask",
+      "totalAnalysing",
+      "totalAnalysed",
+      "dumpScanComplete",
+      "dirScanComplete",
+      "watchBlocker"
+    ]),
+    fileIndex: {
+      get() {
+        return this.$store.state.fileIndex;
+      },
+      set(value) {
+        this.$store.state.fileIndex = value;
+      }
+    },
+    dumpDirectory: {
+      get() {
+        return this.$store.state.dumpDirectory;
+      },
+      set(value) {
+        this.$store.state.dumpDirectory = value;
+      }
+    },
+    watchDirectories: {
+      get() {
+        return this.$store.state.watchDirectories;
+      },
+      set(value) {
+        this.$store.state.watchDirectories = value;
+      }
+    },
+    foundFiletypes: {
+      get() {
+        return this.$store.state.foundFiletypes;
+      },
+      set(value) {
+        this.$store.state.foundFiletypes = value;
+      }
+    },
+    currentTask: {
+      get() {
+        return this.$store.state.currentTask;
+      },
+      set(value) {
+        this.$store.state.currentTask = value;
+      }
+    },
+    totalAnalysing: {
+      get() {
+        return this.$store.state.totalAnalysing;
+      },
+      set(value) {
+        this.$store.state.totalAnalysing = value;
+      }
+    },
+    totalAnalysed: {
+      get() {
+        return this.$store.state.totalAnalysed;
+      },
+      set(value) {
+        this.$store.state.totalAnalysed = value;
+      }
+    },
+    dumpScanComplete: {
+      get() {
+        return this.$store.state.dumpScanComplete;
+      },
+      set(value) {
+        this.$store.state.dumpScanComplete = value;
+      }
+    },
+    dirScanComplete: {
+      get() {
+        return this.$store.state.dirScanComplete;
+      },
+      set(value) {
+        this.$store.state.dirScanComplete = value;
+      }
+    },
+    watchBlocker: {
+      get() {
+        return this.$store.state.watchBlocker;
+      },
+      set(value) {
+        this.$store.state.watchBlocker = value;
+      }
+    },
     content() {
       const everything = Object.keys(this.fileIndex).map(
         item => this.fileIndex[item]
@@ -112,21 +199,7 @@ export default {
     }
   },
   data() {
-    return {
-      fileIndex: {},
-      scan: [],
-      drives: [],
-      dumpDirectory: "",
-      watchDirectories: [],
-      foundFiletypes: [],
-      // task tracking
-      currentTask: "Checking for updates...",
-      totalAnalysing: 0,
-      totalAnalysed: 0,
-      dumpScanComplete: false,
-      dirScanComplete: false,
-      watchBlocker: true
-    };
+    return {};
   },
   watch: {
     dumpScanComplete() {
@@ -184,41 +257,45 @@ export default {
 
     scanDump() {
       return new Promise(async (resolve, reject) => {
-        this.currentTask = `Preparing to scan cache directory...`;
-        const content = await readdir(this.dumpDirectory);
-        if (content)
-          for (let i of content) {
-            this.currentTask = `Reading File: ${i}`;
+        try {
+          this.currentTask = `Preparing to scan cache directory...`;
+          const content = await readdir(this.dumpDirectory);
+          if (content)
+            for (let i of content) {
+              this.currentTask = `Reading File: ${i}`;
 
-            let fullPath = this.dumpDirectory + "/" + i;
+              let fullPath = this.dumpDirectory + "/" + i;
 
-            const buffer = readChunk.sync(fullPath, 0, fileType.minimumBytes);
-            const _type = fileType(buffer);
-            if (_type && !this.foundFiletypes.includes(_type.mime))
-              this.foundFiletypes.push(_type.mime);
+              const buffer = readChunk.sync(fullPath, 0, fileType.minimumBytes);
+              const _type = fileType(buffer);
+              if (_type && !this.foundFiletypes.includes(_type.mime))
+                this.foundFiletypes.push(_type.mime);
 
-            const stats = await stat(fullPath);
-            if (i.includes("__")) {
-              let splitName = i.split("__");
-              let platform = splitName[0];
-              let id = splitName[1];
-              let timestamp = splitName[2].split(".")[0];
-              let type = splitName[2].split(".")[1];
-              let result = {
-                // originLocation: location,
-                dumpKey: i,
-                type,
-                created: stats["ctime"],
-                size: stats["size"]
-              };
-              console.log(i);
+              const stats = await stat(fullPath);
+              if (i.includes("__")) {
+                let splitName = i.split("__");
+                let platform = splitName[0];
+                let id = splitName[1];
+                let timestamp = splitName[2].split(".")[0];
+                let type = splitName[2].split(".")[1];
+                let result = {
+                  // originLocation: location,
+                  dumpKey: i,
+                  type,
+                  created: stats["ctime"],
+                  size: stats["size"]
+                };
+                console.log(i);
 
-              this.fileIndex[i] = result;
+                this.fileIndex[i] = result;
+              }
             }
-          }
-        this.dumpScanComplete = true;
-        this.fileIndex = Object.assign({}, this.fileIndex);
-        resolve();
+          this.dumpScanComplete = true;
+          this.fileIndex = Object.assign({}, this.fileIndex);
+          resolve();
+        } catch (e) {
+          this.currentTask = `Failed access dump folder.`;
+        }
       });
     },
     async scanAll() {
@@ -354,10 +431,11 @@ body {
   position: fixed;
   width: 280px;
   display: flex;
+  margin-left: 70px;
   flex-direction: column;
 }
 .content {
-  margin-left: 280px;
+  margin-left: 360px;
 }
 #logo {
   height: auto;

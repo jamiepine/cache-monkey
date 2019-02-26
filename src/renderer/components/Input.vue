@@ -12,6 +12,7 @@
         @blur="focus = false"
         :type="type"
         :autofocus="autofocus"
+        :readonly="readonly"
       >
       <icon v-if="loading" class="right-icon" :spin="true" icon="spinner"/>
     </div>
@@ -33,7 +34,8 @@ export default {
     "loading",
     "message",
     "type",
-    "autofocus"
+    "autofocus",
+    "readonly"
   ],
   data() {
     return {
