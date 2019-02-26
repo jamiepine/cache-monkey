@@ -8,16 +8,25 @@
     <small>This is the location where cache files are copied so that the originals are not modified.</small>
     <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
     <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
-    <button class="coolbtn margin-vertical" @click="openDumpDirectory">Open Directory</button>
+    <button class="coolbtn margin-vertical" @click="openDirectory">Open Directory</button>
     <h4>Application Cache Folders</h4>
     <small>Add one or several</small>
     <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
-    <div class="flex">
+    <div class="flex-column">
       <div
-        class="coolbtn margin-right"
+        style="display: flex;    height: 37px;"
         v-for="(i, index) of watchDirectories"
         :key="index"
-      >{{i.name}}</div>
+      >
+        <Input @update="(value) => updateDirName(index, value)" :value="i.name" :big="true"/>
+        <Input :readonly="true" :value="i.dir" :big="true"/>
+        <button style="    margin-left: 4px;" class="coolbtn" @click="openDirectory(i.dir)">
+          <icon :icon="['fa','folder-open']"/>
+        </button>
+        <button style="    margin-left: 4px;" class="coolbtn" @click="openDirectory(i.dir)">
+          <icon :icon="['fa','trash']"/>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +53,18 @@ export default {
     Input
   },
   methods: {
+    updateDirName(i, value) {
+      let obj = {};
+      let count = 0;
+      for (let thing of this.watchDirectories) {
+        obj[count] = thing;
+        count++;
+      }
+      obj[i].name = value;
+      this.watchDirectories = Object.keys(obj).map(item => obj[item]);
+      return this.watchDirectories;
+    },
+    rmDir(index) {},
     chooseDumpDir() {
       let dir = dialog.showOpenDialog({
         properties: ["openDirectory"]
@@ -59,27 +80,16 @@ export default {
       });
       if (dir.length > 0)
         this.watchDirectories.push({
-          name: "discord",
+          name: "unnamed",
           dir: dir[0].split("\\").join("/")
         });
     },
-    openDumpDirectory() {
+    openDirectory(item) {
+      if (item) shell.openItem(item);
       shell.openItem(this.dumpDirectory);
     }
   },
   computed: {
-    ...mapState([
-      "fileIndex",
-      "dumpDirectory",
-      "watchDirectories",
-      "foundFiletypes",
-      "currentTask",
-      "totalAnalysing",
-      "totalAnalysed",
-      "dumpScanComplete",
-      "dirScanComplete",
-      "watchBlocker"
-    ]),
     fileIndex: {
       get() {
         return this.$store.state.fileIndex;

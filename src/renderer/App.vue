@@ -42,7 +42,9 @@ export default {
     let ready = true;
     console.log(discordCacheDir);
 
-    const dumpExists = await fs.statSync(dumpDir);
+    const dumpExists = await fs.existsSync(dumpDir);
+
+    console.log(dumpExists, "wrgwrgwrg");
 
     if (dumpExists) {
       this.dumpDirectory = dumpDir;
@@ -57,7 +59,7 @@ export default {
       });
     }
 
-    const discordCacheExists = await fs.statSync(discordCacheDir);
+    const discordCacheExists = await fs.existsSync(discordCacheDir);
 
     if (discordCacheExists) {
       this.watchDirectories.push({
@@ -70,10 +72,185 @@ export default {
     }
 
     if (ready) {
-      this.$store.state.autoStart = true;
+      this.scanDump();
+    }
+  },
+  watch: {
+    dumpDirectory() {
+      // if changed, mark scan as incomplete
+      this.dumpScanComplete = false;
+    },
+    dumpScanComplete() {
+      // this.scanAll();
+    },
+    dirScanComplete() {
+      this.initWatchers();
+      setTimeout(() => (this.watchBlocker = false), 5000);
+    },
+    autoStart() {
+      this.scanDump();
     }
   },
   methods: {
+    initWatchers() {
+      for (let dir of this.watchDirectories) {
+        const watcher = chokidar.watch(dir.dir, { persistent: true });
+        watcher.on("add", async path => {
+          if (this.watchBlocker !== true) {
+            console.log("File", path, "has been added");
+            await this.processItem(dir.dir, path, path.split("Cache\\")[1]);
+            this.fileIndex = Object.assign({}, this.fileIndex);
+          }
+        });
+      }
+      this.currentTask = "Waiting for changes...";
+    },
+    scanDump() {
+      if (this.dumpScanComplete) {
+        this.scanAll();
+        return;
+      }
+      return new Promise(async (resolve, reject) => {
+        try {
+          this.currentTask = `Preparing to scan cache directory...`;
+          this.processing = true;
+          this.dumpScanComplete = false;
+          const content = await readdir(this.dumpDirectory);
+          if (content)
+            for (let i of content) {
+              if (!this.processing) {
+                this.dumpScanComplete = false;
+                break;
+              }
+
+              this.currentTask = `Loading Dump: ${i}`;
+
+              let fullPath = this.dumpDirectory + "/" + i;
+
+              const buffer = readChunk.sync(fullPath, 0, fileType.minimumBytes);
+              const _type = fileType(buffer);
+              const dupeTypes = [];
+
+              for (let i = this.foundFiletypes.length; i-- > 0; ) {
+                if (_type && this.foundFiletypes[i].type == _type.mime)
+                  dupeTypes.push(_type.mime);
+              }
+
+              if (_type && dupeTypes.length <= 0)
+                this.foundFiletypes.push({ type: _type.mime, filtered: false });
+
+              const stats = await stat(fullPath);
+              if (i.includes("__")) {
+                let splitName = i.split("__");
+                let platform = splitName[0];
+                let id = splitName[1];
+                let timestamp = splitName[2].split(".")[0];
+                let type = splitName[2].split(".")[1];
+                let result = {
+                  // originLocation: location,
+                  dumpKey: i,
+                  type,
+                  created: stats["ctime"],
+                  size: stats["size"]
+                };
+                console.log(i);
+
+                this.fileIndex[i] = result;
+                this.fileIndex = Object.assign({}, this.fileIndex);
+              }
+            }
+          this.dumpScanComplete = true;
+          this.processing = false;
+          resolve();
+        } catch (e) {
+          this.processing = false;
+          this.currentTask = `Failed access dump folder.`;
+        }
+      });
+    },
+    async scanAll() {
+      this.dirScanComplete = false;
+      for (let directory of this.watchDirectories) {
+        await this.scanDirectory(directory);
+      }
+      this.dirScanComplete = true;
+    },
+    scanDirectory(directory) {
+      return new Promise(async (resolve, reject) => {
+        if (!this.dumpDirectory)
+          return console.log(`Error: No dump directory set.`);
+
+        let absoluteLocation = directory.dir + "/";
+
+        this.currentTask = `Indexing cache directory for ${directory.name}`;
+        this.processing = true;
+        const directoryItems = await readdir(absoluteLocation);
+        this.totalAnalysing = directoryItems.length;
+        for (let i of directoryItems) {
+          if (this.processing === false) {
+            this.dirScanComplete = false;
+            break;
+          }
+          await this.processItem(directory, absoluteLocation + i, i);
+        }
+        this.processing = false;
+        this.currentTask = "Scan complete";
+        this.fileIndex = Object.assign({}, this.fileIndex);
+        resolve();
+      });
+    },
+    async processItem(directory, location, name) {
+      try {
+        const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
+        const _type = fileType(buffer);
+        const dupeTypes = [];
+
+        for (let i = this.foundFiletypes.length; i-- > 0; ) {
+          if (_type && this.foundFiletypes[i].type == _type.mime)
+            dupeTypes.push(_type.mime);
+        }
+
+        if (_type && dupeTypes.length <= 0)
+          this.foundFiletypes.push({ type: _type.mime, filtered: false });
+
+        const stats = await stat(location);
+
+        const type = _type ? _type.mime : "unknown";
+
+        let fileKey = `${directory.name}__${name}__${new Date(
+          stats["ctime"]
+        ).getTime()}`;
+
+        const fileKeyWithExtention =
+          type !== "unknown" ? `${fileKey}.${type.split("/")[1]}` : fileKey;
+
+        let result = {
+          originLocation: location,
+          dumpKey: fileKeyWithExtention,
+          type,
+          created: stats["ctime"],
+          size: stats["size"]
+        };
+
+        if (this.fileIndex.hasOwnProperty(result.dumpKey)) {
+          this.currentTask = `${name} already in dump.`;
+          return;
+        } else {
+          this.currentTask = `Copying ${name} to dump.`;
+        }
+
+        this.fileIndex[fileKey] = result;
+        this.totalAnalysed += 1;
+
+        await copyFile(
+          location,
+          this.dumpDirectory + "/" + fileKeyWithExtention
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     // this method appends a <style> element with the current theme varibales at the end of the <body>
     initGlobalStyleVariables() {
       // convert theme object to CSS
@@ -101,18 +278,14 @@ export default {
   },
   computed: {
     ...mapGetters(["getTheme", "getThemeName"]),
-    ...mapState([
-      "fileIndex",
-      "dumpDirectory",
-      "watchDirectories",
-      "foundFiletypes",
-      "currentTask",
-      "totalAnalysing",
-      "totalAnalysed",
-      "dumpScanComplete",
-      "dirScanComplete",
-      "watchBlocker"
-    ]),
+    processing: {
+      get() {
+        return this.$store.state.processing;
+      },
+      set(value) {
+        this.$store.state.processing = value;
+      }
+    },
     fileIndex: {
       get() {
         return this.$store.state.fileIndex;

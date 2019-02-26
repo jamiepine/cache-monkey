@@ -1,9 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
-import { createPersistedState, createSharedMutations } from 'vuex-electron';
+import { createPersistedState, createSharedMutations } from "vuex-electron";
 
-import modules from './modules';
+import modules from "./modules";
 
 Vue.use(Vuex);
 
@@ -11,6 +11,7 @@ export default new Vuex.Store({
   strict: false,
   modules,
   state: {
+    processing: false,
     fileIndex: {},
     scan: [],
     drives: [],
@@ -21,36 +22,35 @@ export default new Vuex.Store({
     currentTask: "Checking for updates...",
     totalAnalysing: 0,
     totalAnalysed: 0,
-    dumpScanComplete: true,
-    dirScanComplete: true,
+    dumpScanComplete: false,
+    dirScanComplete: false,
     watchBlocker: true,
     autoStart: false,
-    // tooltips 
+    // tooltips
     tooltipDefault: {
-      placement: 'top',
+      placement: "top",
       arrow: true,
-      animation: 'fade',
+      animation: "fade",
       delay: [0, 0],
       duration: 0
     },
     tooltipBottom: {
-      placement: 'bottom',
+      placement: "bottom",
       arrow: true,
-      animation: 'fade',
+      animation: "fade",
       delay: [0, 0],
       duration: 0
     },
     tooltipSidebar: {
-      placement: 'right',
+      placement: "right",
       arrow: true,
-      animation: 'fade',
+      animation: "fade",
       delay: [0, 0],
       duration: 0
     }
   },
   plugins: [
-    createPersistedState(),
+    createPersistedState()
     // createSharedMutations(),
-  ],
-  strict: process.env.NODE_ENV !== 'production',
+  ]
 });
