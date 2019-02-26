@@ -64,6 +64,7 @@
     "chokidar": "^2.1.2",
     "drivelist": "^6.4.6",
     "file-type": "^10.8.0",
+    "font-awesome": "^4.7.0",
     "nanoid": "^2.0.1",
     "read-chunk": "^3.0.0",
     "remote": "^0.2.6",
