@@ -48,7 +48,10 @@ export default {
       let dir = dialog.showOpenDialog({
         properties: ["openDirectory"]
       });
-      if (dir.length > 0) this.dumpDirectory = dir[0].split("\\").join("/");
+      if (dir.length > 0) {
+        this.dumpDirectory = dir[0].split("\\").join("/");
+        this.fileIndex = {};
+      }
     },
     chooseWatchDir() {
       let dir = dialog.showOpenDialog({

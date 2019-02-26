@@ -21,8 +21,8 @@ export default new Vuex.Store({
     currentTask: "Checking for updates...",
     totalAnalysing: 0,
     totalAnalysed: 0,
-    dumpScanComplete: false,
-    dirScanComplete: false,
+    dumpScanComplete: true,
+    dirScanComplete: true,
     watchBlocker: true,
     autoStart: false,
     // tooltips 

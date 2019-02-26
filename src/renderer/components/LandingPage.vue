@@ -261,6 +261,7 @@ export default {
       return new Promise(async (resolve, reject) => {
         try {
           this.currentTask = `Preparing to scan cache directory...`;
+          this.dumpScanComplete = false;
           const content = await readdir(this.dumpDirectory);
           if (content)
             for (let i of content) {
@@ -308,6 +309,9 @@ export default {
       });
     },
     async scanAll() {
+      if (this.dirScanComplete === false)
+        console.log("Dir scan already in process");
+      this.dirScanComplete = false;
       for (let directory of this.watchDirectories) {
         await this.scanDirectory(directory);
       }
