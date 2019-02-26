@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/LandingPage').default,
     },
     {
+      path: '/settings',
+      name: 'settings',
+      component: require('@/components/Settings').default,
+    },
+    {
       path: '/info',
       name: 'info',
       component: require('@/components/Info').default,

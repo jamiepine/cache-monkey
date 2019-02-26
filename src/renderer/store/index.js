@@ -23,7 +23,29 @@ export default new Vuex.Store({
     totalAnalysed: 0,
     dumpScanComplete: false,
     dirScanComplete: false,
-    watchBlocker: true
+    watchBlocker: true,
+    // tooltips 
+    tooltipDefault: {
+      placement: 'top',
+      arrow: true,
+      animation: 'fade',
+      delay: [0, 0],
+      duration: 0
+    },
+    tooltipBottom: {
+      placement: 'bottom',
+      arrow: true,
+      animation: 'fade',
+      delay: [0, 0],
+      duration: 0
+    },
+    tooltipSidebar: {
+      placement: 'right',
+      arrow: true,
+      animation: 'fade',
+      delay: [0, 0],
+      duration: 0
+    }
   },
   plugins: [
     createPersistedState(),

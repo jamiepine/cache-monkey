@@ -6,7 +6,7 @@
       <h1>Cache Monkey</h1>
       <small>by Jamie Pine</small>
       <br>
-      <Input :value="currentTask" @update="(value) => text = value" :big="false"/>
+      <Input :editable="false" :value="currentTask" @update="(value) => text = value" :big="false"/>
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
       <button class="coolbtn margin-vertical" @click="scanDump">Load Data</button>
       <br>
@@ -24,28 +24,13 @@
       <b>{{totalAnalysed}}/{{totalAnalysing}}</b>
       <div style="opacity:0.3;">Content Loaded:</div>
       <b>{{content.length}}</b>
-      <!-- <div style="opacity:0.3;">dumpScanComplete:</div>
-      {{dumpScanComplete}}
-      <div style="opacity:0.3;">dirScanComplete:</div>
-      {{dirScanComplete}}-->
-      <!-- <div style="opacity:0.3;">Watching For New Files:</div>
-      {{!watchBlocker}}-->
       <br>
-      <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
-      <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
-      <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
-      <div class="flex">
-        <div
-          class="coolbtn margin-right"
-          v-for="(i, index) of watchDirectories"
-          :key="index"
-        >{{i.name}}</div>
-      </div>
+
       <button class="coolbtn margin-vertical" @click="chooseWatchDir">Purge Dump</button>
       <button class="coolbtn margin-vertical warning" @click="chooseWatchDir">Purge Cache</button>
       <button class="coolbtn margin-vertical danger" @click="chooseWatchDir">Purge Cache & Dump</button>
     </div>
-    <div class="content">
+    <div class="content" :class="{'no-interact opacity-low':contentLength}">
       <div
         v-for="(i, index) of content"
         :key="index"
@@ -83,17 +68,49 @@ export default {
   components: {
     Input
   },
-  mounted() {
+  created() {
     // set default dump directory
-    let defaultDir =
-      Path.join(os.homedir())
-        .split("\\")
-        .join("/") + "/_cache_dump_";
+    let userDir = Path.join(os.homedir())
+      .split("\\")
+      .join("/");
 
-    fs.exists("defaultDir", err => {
-      if (err) confirm.log(err);
+    let dumpDir = `${userDir}/CacheMonkeyDump`;
+    let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
+    if (os.platform() === "darwin") {
+      discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
+    }
+    let ready = true;
+    console.log(discordCacheDir);
+
+    fs.exists(dumpDir, exists => {
+      if (exists) {
+        this.dumpDirectory = dumpDir;
+      } else {
+        // create dump folder
+        fs.mkdir(dumpDir, err => {
+          if (err) {
+            this.currentTask = "Failed to create dump directory.";
+            ready = false;
+          }
+          this.dumpDirectory = dumpDir;
+        });
+      }
     });
-    // this.scanDump();
+
+    fs.exists(discordCacheDir, exists => {
+      if (exists) {
+        this.watchDirectories.push({
+          name: "discord",
+          dir: discordCacheDir
+        });
+      } else {
+        this.currentTask = "Could not find Discord cache, please add manually.";
+        ready = false;
+      }
+    });
+    if (ready) {
+      this.scanDump();
+    }
   },
   computed: {
     ...mapState([
@@ -195,7 +212,17 @@ export default {
       const filter = everything.filter(
         item => item.type && item.type != "unknown" && item.type != "gzip"
       );
+      // if (filter.length === 0)
+      //   for (let i = 0; i < 50; i++) {
+      //     filter.push({
+      //       dumpKey: ""
+      //     });
+      //   }
       return filter.reverse();
+    },
+    contentLength() {
+      return Object.keys(this.fileIndex).map(item => this.fileIndex[item])
+        .length;
     }
   },
   data() {
@@ -239,7 +266,7 @@ export default {
       });
       if (dir.length > 0)
         this.watchDirectories.push({
-          name: "discord",
+          name: "Custom",
           dir: dir[0].split("\\").join("/")
         });
     },
@@ -360,9 +387,7 @@ export default {
           location,
           this.dumpDirectory + "/" + fileKeyWithExtention
         );
-        this.currentTask = false;
       } catch (err) {
-        this.currentTask = false;
         console.log(err);
       }
     },
@@ -433,6 +458,8 @@ body {
   display: flex;
   margin-left: 70px;
   flex-direction: column;
+  background: var(--background2);
+  height: 100vh;
 }
 .content {
   margin-left: 360px;

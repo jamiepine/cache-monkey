@@ -77,6 +77,12 @@ body {
   flex-direction: row;
   height: calc(100vh - var(--pageContainerOffset));
 }
+.page {
+  margin-left: 70px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
 .page-container {
   flex: 1 1 auto;
   margin-left: 0px;
@@ -152,13 +158,24 @@ p {
   opacity: 0.5;
   margin-bottom: 20px;
 }
+small {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
 a {
   color: var(--text);
   text-decoration: none;
 }
+h1 {
+  font-weight: 900;
+  margin-top: 0px;
+}
 h2 {
   font-weight: 900;
   margin-top: 0px;
+}
+h4 {
+  margin-top: 20px;
 }
 hr {
   border: 1px solid var(--box);
@@ -195,6 +212,9 @@ select {
 }
 .no-interact {
   pointer-events: none;
+}
+.opacity-low {
+  opacity: 0.5;
 }
 .no-hover:hover {
   cursor: normal;
@@ -342,7 +362,13 @@ $warning: rgb(214, 161, 48);
 .tippy-popper[x-placement^="top"] .tippy-tooltip .tippy-arrow,
 .tippy-popper[x-placement^="left"] .tippy-tooltip .tippy-arrow,
 .tippy-popper[x-placement^="right"] .tippy-tooltip .tippy-arrow {
-  border-bottom-color: #111111;
+  fill: #111111;
+}
+
+.tippy-popper[x-placement^="right"] .tippy-tooltip .tippy-arrow {
+  border-right: 7px solid #111111;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
 }
 
 /* annoying electron highlight */

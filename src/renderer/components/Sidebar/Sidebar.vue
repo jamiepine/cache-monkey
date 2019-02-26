@@ -3,16 +3,21 @@
     <div id="apple-buttons-area"></div>
     <div class="logo"></div>
     <router-link to="home">
-      <div class="sidebar-item">
+      <div v-tippy="$store.state.tooltipSidebar" title="Home" class="sidebar-item">
         <icon class="icon" :icon="['fa', 'magic']"></icon>
       </div>
     </router-link>
+    <router-link to="settings">
+      <div v-tippy="$store.state.tooltipSidebar" title="Settings" class="sidebar-item">
+        <icon class="icon" :icon="['fa', 'cog']"></icon>
+      </div>
+    </router-link>
     <router-link to="info">
-      <div class="sidebar-item">
+      <div v-tippy="$store.state.tooltipSidebar" title="About Cache Monkey" class="sidebar-item">
         <icon class="icon" :icon="['fa', 'heart']"></icon>
       </div>
     </router-link>
-    <div class="sidebar-item">
+    <div v-tippy="$store.state.tooltipSidebar" title="Twitter" class="sidebar-item">
       <icon class="icon" :icon="['fab', 'twitter']"></icon>
     </div>
   </div>

@@ -75,11 +75,11 @@
     "remote": "^0.2.6",
     "sqlite3": "^4.0.6",
     "util": "^0.11.1",
-    "v-tippy": "^2.0.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-fontawesome": "0.0.2",
     "vue-router": "^3.0.1",
+    "vue-tippy": "^2.1.0",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0"
   },

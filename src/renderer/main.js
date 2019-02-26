@@ -8,7 +8,7 @@ import store from './store';
 // import '../logic/database/database';
 // Font Awesome Libraries
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faEnvelope, faMagic, faHeart } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faMagic, faHeart, faCog } from '@fortawesome/free-solid-svg-icons'
 import { faTwitter, faLinkedinIn, faTwitch } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -18,10 +18,16 @@ library.add({
   faTwitch,
   faEnvelope,
   faMagic,
-  faHeart
+  faHeart,
+  faCog
 });
 
 Vue.component('icon', FontAwesomeIcon);
+
+
+// Vue Tippy
+import VueTippy from "vue-tippy";
+Vue.use(VueTippy);
 
 
 // import dao from '../logic/database/dao'

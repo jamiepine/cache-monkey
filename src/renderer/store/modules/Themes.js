@@ -1,9 +1,10 @@
 const state = {
-  theme: "light",
+  theme: "dark",
   // define styles here
   themes: {
     light: {
       background: "#f1f1f1",
+      background2 :"#1a1a1a",
       box: "#e6e6e6",
       boxLight: "#e6e6e6",
       boxHover: "#ececec",
@@ -19,6 +20,7 @@ const state = {
     },
     dark: {
       background: "#181818",
+      background2: "#1a1a1a",
       box: "#202020",
       boxLight: "#292929",
       boxHover: "#242424",
@@ -35,7 +37,6 @@ const state = {
     }
   }
 };
-
 const mutations = {
   CHANGE_THEME(state, theme) {
     state.theme = theme;
