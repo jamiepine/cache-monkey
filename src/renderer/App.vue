@@ -10,7 +10,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "space",
+  name: "cachemonkey",
   components: {
     Sidebar
   },
