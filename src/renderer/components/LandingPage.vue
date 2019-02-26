@@ -3,7 +3,7 @@
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
       <br>
-      <h1>Cache Monkey</h1>
+      <h1>CacheMonkey</h1>
       <small>by Jamie Pine</small>
       <br>
       <Input :value="currentTask" @update="(value) => text = value" :big="false"/>
@@ -17,7 +17,9 @@
           class="coolbtn margin-right"
           v-for="(i, index) of foundFiletypes"
           :key="index"
-        >{{i.split('/')[1]}}</div>
+          @click="filterItems(i)"
+          :class="{ 'filtered': i.filtered }"
+        >{{i.type.split('/')[1]}}</div>
       </div>
 
       <div style="opacity:0.3;">Total Analysed:</div>
@@ -193,13 +195,21 @@ export default {
         item => this.fileIndex[item]
       );
       const filter = everything.filter(
-        item => item.type && item.type != "unknown" && item.type != "gzip"
+        item => {
+          if (this.currentFilter) {
+            return item.type && item.type != "unknown" && (this.currentFilter && item.type == this.currentFilter)
+          } else {
+            return item.type && item.type != "unknown" && item.type != "gzip"
+          }
+        } 
       );
       return filter.reverse();
     }
   },
   data() {
-    return {};
+    return {
+      currentFilter: false
+    };
   },
   watch: {
     dumpScanComplete() {
@@ -268,8 +278,14 @@ export default {
 
               const buffer = readChunk.sync(fullPath, 0, fileType.minimumBytes);
               const _type = fileType(buffer);
-              if (_type && !this.foundFiletypes.includes(_type.mime))
-                this.foundFiletypes.push(_type.mime);
+              const dupeTypes = [];
+
+              for (let i = this.foundFiletypes.length; i --> 0;) {
+                  if (_type && this.foundFiletypes[i].type == _type.mime) dupeTypes.push(_type.mime);
+              }
+
+              if (_type && dupeTypes.length <= 0)
+                this.foundFiletypes.push({ type: _type.mime, filtered: false });
 
               const stats = await stat(fullPath);
               if (i.includes("__")) {
@@ -327,8 +343,14 @@ export default {
         this.currentTask = `Checking ${name}`;
         const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
         const _type = fileType(buffer);
-        if (_type && !this.foundFiletypes.includes(_type.mime))
-          this.foundFiletypes.push(_type.mime);
+        const dupeTypes = [];
+
+        for (let i = this.foundFiletypes.length; i --> 0;) {
+            if (_type && this.foundFiletypes[i].type == _type.mime) dupeTypes.push(_type.mime);
+        }
+
+        if (_type && dupeTypes.length <= 0)
+          this.foundFiletypes.push({ type: _type.mime, filtered: false });
 
         const stats = await stat(location);
 
@@ -374,6 +396,22 @@ export default {
       if (bytes === 0) return "0 Byte";
       const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
       return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+    },
+    filterItems(type) {
+      if (type.filtered) {
+        this.currentFilter = false;
+        type.filtered = false;
+        return;
+      }
+      
+      const filteredTypes = [];
+
+      for (let i = this.foundFiletypes.length; i --> 0;) {
+          if (this.foundFiletypes[i].filtered) this.foundFiletypes[i].filtered = false;
+      }
+
+      type.filtered = true;
+      this.currentFilter = type.type.split('/')[1];
     }
   }
 };
@@ -412,6 +450,9 @@ body {
   margin-top: 10px;
   .coolbtn {
     margin-bottom: 5px;
+    &.filtered {
+      background: #1bb9dc;
+    }
   }
 }
 #wrapper {

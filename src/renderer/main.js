@@ -23,7 +23,6 @@ library.add({
 
 Vue.component('icon', FontAwesomeIcon);
 
-
 // import dao from '../logic/database/dao'
 
 // const CoreDB = new dao('Core', true);

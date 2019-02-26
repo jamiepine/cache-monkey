@@ -25,7 +25,7 @@
     "postinstall": "electron-builder install-app-deps && npm run lint:fix"
   },
   "build": {
-    "productName": "Cache Monkey",
+    "productName": "CacheMonkey",
     "appId": "com.jamiepine.cachemonkey",
     "directories": {
       "output": "build"

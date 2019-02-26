@@ -1,5 +1,5 @@
 const state = {
-  theme: "light",
+  theme: "dark",
   // define styles here
   themes: {
     light: {

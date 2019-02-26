@@ -23,7 +23,7 @@ function createWindow() {
     width: 1000,
     frame: true,
     titleBarStyle: 'hidden',
-    title: "Space",
+    title: "CacheMonkey",
     webPreferences: {
       devTools: true,
       webSecurity: false
