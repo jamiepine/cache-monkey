@@ -129,14 +129,8 @@ export default {
     },
     evaluateFileIndex() {
       for (let i of Object.keys(this.fileIndex)) {
-        // discover filetypes
-        let type = this.fileIndex[i].type;
-        const dupeTypes = [];
-        for (let i = this.foundFiletypes.length; i-- > 0; ) {
-          if (this.foundFiletypes[i].type == type) dupeTypes.push(type);
-        }
-        if (dupeTypes.length <= 0)
-          this.foundFiletypes.push({ type, filtered: false });
+        if (!this.foundFiletypes.includes(this.fileIndex[i].type))
+          this.foundFiletypes.push(this.fileIndex[i].type);
       }
     },
     scanDump() {
@@ -241,15 +235,9 @@ export default {
       try {
         const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
         const _type = fileType(buffer);
-        const dupeTypes = [];
 
-        for (let i = this.foundFiletypes.length; i-- > 0; ) {
-          if (_type && this.foundFiletypes[i].type == _type.mime)
-            dupeTypes.push(_type.mime);
-        }
-
-        if (_type && dupeTypes.length <= 0)
-          this.foundFiletypes.push({ type: _type.mime, filtered: false });
+        if (_type && _type.mime && !this.foundFiletypes.includes(_type.mime))
+          this.foundFiletypes.push(_type.mime);
 
         const stats = await stat(location);
 
@@ -527,9 +515,11 @@ body {
   color: var(--highlight);
 }
 p {
-  font-size: 12px;
-  opacity: 0.5;
+  font-size: 16px;
+  opacity: 0.8;
   margin-bottom: 20px;
+  margin-top: 9px;
+  line-height: 21px;
 }
 small {
   margin-top: 5px;

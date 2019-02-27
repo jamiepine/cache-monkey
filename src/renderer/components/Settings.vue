@@ -78,6 +78,7 @@ export default {
       let dir = dialog.showOpenDialog({
         properties: ["openDirectory"]
       });
+      if (!dir) return;
       if (dir.length > 0) {
         let cleanDir = dir[0].split("\\").join("/");
         let dirArray = cleanDir.split("/");

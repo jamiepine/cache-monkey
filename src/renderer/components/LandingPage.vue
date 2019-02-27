@@ -29,22 +29,21 @@
           v-for="(i, index) of foundFiletypes"
           :key="index"
           @click="filterItems(i)"
-          :class="{ 'filtered': i.filtered }"
-        >{{i.type.split('/')[1]}}</div>
+        >{{i.split('/')[1] ? i.split('/')[1] : 'uh?'}}</div>
       </div>
 
-      <div style="opacity:0.3;">Total Analysed:</div>
+      <!-- <div style="opacity:0.3;">Total Analysed:</div>
       <b>{{totalAnalysed}}/{{totalAnalysing}}</b>
       <div style="opacity:0.3;">Content Loaded:</div>
-      <b>{{content.length}}</b>
+      <b>{{content.length}}</b>-->
       <!-- <div style="opacity:0.3;">dumpScanComplete:</div>
       <b>{{dumpScanComplete}}</b>
       <div style="opacity:0.3;">dirScanComplete</div>
       <b>{{dirScanComplete}}</b>
       <br>-->
       <button class="coolbtn margin-vertical" @click="$parent.purgeDump">Purge Dump</button>
-      <button class="coolbtn margin-vertical warning" @click="chooseWatchDir">Purge Cache</button>
-      <button class="coolbtn margin-vertical danger" @click="chooseWatchDir">Purge Cache & Dump</button>
+      <button class="coolbtn margin-vertical warning">Purge Cache</button>
+      <button class="coolbtn margin-vertical danger">Purge Cache & Dump</button>
     </div>
     <div class="content">
       <div
@@ -53,7 +52,12 @@
         class="image"
         @click="click(i)"
         :style="{ 'background-image': `url(file://${dumpDirectory}/${i.dumpKey})` }"
-      ></div>
+      >
+        <div class="hover-info">
+          <div class="blob" v-if="i.type">{{i.type.split('/')[1]}}</div>
+          <!-- {{bytesToSize(i.size)}} -->
+        </div>
+      </div>
     </div>
     <!-- <div class="image" :style="{ 'background-image': `url(${test})` }"></div>
     {{test}}-->
@@ -84,8 +88,51 @@ export default {
   components: {
     Input
   },
-
+  data() {
+    return {
+      currentFilter: false
+    };
+  },
+  watch: {},
+  methods: {
+    open(link) {
+      this.$electron.shell.openExternal(link);
+    },
+    bytesToSize(bytes) {
+      const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+      if (bytes === 0) return "0 Byte";
+      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+      return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+    },
+    filterItems(type) {
+      this.currentFilter = type;
+    }
+  },
   computed: {
+    content() {
+      const everything = Object.keys(this.fileIndex).map(
+        item => this.fileIndex[item]
+      );
+      const filter = everything.filter(item => {
+        if (this.currentFilter) {
+          return (
+            item.type &&
+            // item.type != "unknown" &&
+            (this.currentFilter && item.type == this.currentFilter)
+          );
+        } else {
+          return item.type && item.type != "unknown" && item.type != "gzip";
+        }
+      });
+      return filter.reverse();
+    },
+    contentLength() {
+      return Object.keys(this.fileIndex).map(item => this.fileIndex[item])
+        .length;
+    },
+    autoStart() {
+      return this.$store.state.autoStart;
+    },
     processing: {
       get() {
         return this.$store.state.processing;
@@ -173,103 +220,6 @@ export default {
       set(value) {
         this.$store.state.watchBlocker = value;
       }
-    },
-    content() {
-      const everything = Object.keys(this.fileIndex).map(
-        item => this.fileIndex[item]
-      );
-      const filter = everything.filter(item => {
-        if (this.currentFilter) {
-          return (
-            item.type &&
-            item.type != "unknown" &&
-            (this.currentFilter && item.type == this.currentFilter)
-          );
-        } else {
-          return item.type && item.type != "unknown" && item.type != "gzip";
-        }
-      });
-
-      // if (filter.length === 0)
-      //   for (let i = 0; i < 50; i++) {
-      //     filter.push({
-      //       dumpKey: ""
-      //     });
-      //   }
-      return filter.reverse();
-    },
-    contentLength() {
-      return Object.keys(this.fileIndex).map(item => this.fileIndex[item])
-        .length;
-    },
-    autoStart() {
-      return this.$store.state.autoStart;
-    }
-  },
-  data() {
-    return {
-      currentFilter: false
-    };
-  },
-  watch: {},
-  methods: {
-    click(item) {
-      console.log(item);
-    },
-
-    chooseDumpDir() {
-      let dir = dialog.showOpenDialog({
-        properties: ["openDirectory"]
-      });
-      if (dir.length > 0) this.dumpDirectory = dir[0].split("\\").join("/");
-    },
-    chooseWatchDir() {
-      let dir = dialog.showOpenDialog({
-        properties: ["openDirectory"]
-      });
-      if (dir.length > 0)
-        this.watchDirectories.push({
-          name: "Custom",
-          dir: dir[0].split("\\").join("/")
-        });
-    },
-    // appPath(directoryName) {
-    //   const dir = Path.join(
-    //     os.homedir(),
-    //     `AppData/Roaming/${directoryName}/Cache`
-    //   );
-    //   if (!dir)
-    //     return console.log(
-    //       `Could not find cache folder for app "${directoryName}"`
-    //     );
-    //   return dir.split("\\").join("/");
-    // },
-
-    open(link) {
-      this.$electron.shell.openExternal(link);
-    },
-    bytesToSize(bytes) {
-      const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-      if (bytes === 0) return "0 Byte";
-      const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-      return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
-    },
-    filterItems(type) {
-      if (type.filtered) {
-        this.currentFilter = false;
-        type.filtered = false;
-        return;
-      }
-
-      const filteredTypes = [];
-
-      for (let i = this.foundFiletypes.length; i-- > 0; ) {
-        if (this.foundFiletypes[i].filtered)
-          this.foundFiletypes[i].filtered = false;
-      }
-
-      type.filtered = true;
-      this.currentFilter = type.type.split("/")[1];
     }
   }
 };
@@ -300,6 +250,15 @@ body {
 }
 .image:hover {
   opacity: 0.7;
+}
+.blob {
+  padding: 5px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 9px;
+  font-weight: bold;
+  position: absolute;
+  margin: 4px;
 }
 .flex {
   display: flex;

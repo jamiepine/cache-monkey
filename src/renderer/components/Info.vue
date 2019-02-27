@@ -2,16 +2,66 @@
   <div class="page">
     <br>
     <h2>About CacheMonkey</h2>
-    <small>by Jamie Pine</small>
+    <small>...and some helpful info</small>
     <br>
-    <h4>❤ Support me</h4>
-    <small>If you enjoy this app, the best way to show some support to me is by jumping into one of my streams on Twitch. I stream daily</small>
+    <div class="support">
+      <h4>❤️ Support me</h4>
+      <p>
+        If you enjoy this app, the best way to support it is by jumping into one of my streams on Twitch. I stream daily at
+        <a
+          href="#"
+          @click.prevent="open('https://twitch.tv/jamiepinelive')"
+        >twitch.tv/jamiepinelive</a>. If you want to contact me about a problem with this app, drop a tweet to
+        <a
+          href="#"
+          @click.prevent="open('https://twitter.com/jamiepine')"
+        >@jamiepine</a> on Twitter
+      </p>
+    </div>
+    <!-- <icon :icon="['fab', 'twitter']"/> -->
+    <h4>🤔 What is a cache?</h4>
+    <p>Caching is common practice by apps to help decreace server bandwidth costs and improve loadtimes. If an app can save media to your device, it need not request it from the server again.</p>
+    <h4>🔑 What apps does CacheMonkey support?</h4>
+    <p>In theory, anything with a "Cache" folder, if you can locate it, we should be able to convert it to the original filetype and allow you to view it with this app.</p>
+    <h4>🛠 Developers, you can help!</h4>
+    <p>
+      The source code for this app is avalible on
+      <a
+        href="#"
+        @click.prevent="open('https://github.com/jamiepine/cache-monkey')"
+      >GitHub</a>, I made it in just two days so it could use a clean-up. It's built with NodeJS, VueJS and Electron (I've disabled caching, don't worry about possible cache-ception).
+    </p>
+    <h4>👀 Watch me build it!</h4>
+    <p>
+      I built this app in a YouTube video, watch it
+      <a
+        href="#"
+        @click.prevent="open('https://youtube.com/jamiepine')"
+      >here.</a>
+    </p>
   </div>
 </template>
 
 <script>
-export default {};
+const { shell } = require("electron");
+
+export default {
+  methods: {
+    open(link) {
+      shell.openExternal(link);
+    }
+  }
+};
 </script>
 
-<style>
+<style scoped>
+a {
+  color: #14ffff;
+}
+.support {
+  background: var(--box);
+  padding: 5px 30px 1px 30px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
 </style>
