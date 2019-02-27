@@ -1,11 +1,13 @@
 <template>
   <div id="app">
     <Sidebar/>
+    <Panel/>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import Panel from "./components/SlidePanel";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters, mapState } from "vuex";
 import drivelist from "drivelist";
@@ -25,7 +27,8 @@ const chokidar = require("chokidar");
 export default {
   name: "cachemonkey",
   components: {
-    Sidebar
+    Sidebar,
+    Panel
   },
   async created() {
     this.initGlobalStyleVariables();
@@ -44,7 +47,7 @@ export default {
 
     const dumpExists = await fs.existsSync(dumpDir);
 
-    console.log(dumpExists, "wrgwrgwrg");
+    // console.log(dumpExists, "wrgwrgwrg");
 
     if (dumpExists) {
       this.dumpDirectory = dumpDir;
@@ -72,7 +75,12 @@ export default {
     }
 
     if (ready) {
-      this.scanDump();
+      if (localStorage.getItem("fileIndex")) {
+        this.fileIndex = JSON.parse(localStorage.getItem("fileIndex"));
+        this.dumpScanComplete = true;
+      } else {
+        this.scanDump();
+      }
     }
   },
   watch: {
@@ -86,9 +94,6 @@ export default {
     dirScanComplete() {
       this.initWatchers();
       setTimeout(() => (this.watchBlocker = false), 5000);
-    },
-    autoStart() {
-      this.scanDump();
     }
   },
   methods: {
@@ -97,7 +102,7 @@ export default {
         const watcher = chokidar.watch(dir.dir, { persistent: true });
         watcher.on("add", async path => {
           if (this.watchBlocker !== true) {
-            console.log("File", path, "has been added");
+            // console.log("File", path, "has been added");
             await this.processItem(dir.dir, path, path.split("Cache\\")[1]);
             this.fileIndex = Object.assign({}, this.fileIndex);
           }
@@ -153,12 +158,11 @@ export default {
                   created: stats["ctime"],
                   size: stats["size"]
                 };
-                console.log(i);
 
                 this.fileIndex[i] = result;
-                this.fileIndex = Object.assign({}, this.fileIndex);
               }
             }
+          this.fileIndex = Object.assign({}, this.fileIndex);
           this.dumpScanComplete = true;
           this.processing = false;
           resolve();
@@ -292,6 +296,9 @@ export default {
       },
       set(value) {
         this.$store.state.fileIndex = value;
+        setTimeout(() => {
+          localStorage.setItem("fileIndex", JSON.stringify(this.fileIndex));
+        });
       }
     },
     dumpDirectory: {
