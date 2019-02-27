@@ -8,7 +8,7 @@
     <small>This is the location where cache files are copied so that the originals are not modified.</small>
     <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
     <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
-    <button class="coolbtn margin-vertical" @click="openDirectory">Open Directory</button>
+    <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
     <h4>Application Cache Folders</h4>
     <small>Add one or several</small>
     <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
@@ -78,15 +78,19 @@ export default {
       let dir = dialog.showOpenDialog({
         properties: ["openDirectory"]
       });
-      if (dir.length > 0)
+      if (dir.length > 0) {
+        let cleanDir = dir[0].split("\\").join("/");
+        let dirArray = cleanDir.split("/");
+        let name = dirArray[dirArray.length - 2];
         this.watchDirectories.push({
-          name: "unnamed",
+          name: name,
           dir: dir[0].split("\\").join("/")
         });
+      }
     },
     openDirectory(item) {
       if (item) shell.openItem(item);
-      shell.openItem(this.dumpDirectory);
+      else shell.openItem(this.dumpDirectory);
     }
   },
   computed: {
@@ -111,6 +115,7 @@ export default {
         return this.$store.state.watchDirectories;
       },
       set(value) {
+        localStorage;
         this.$store.state.watchDirectories = value;
       }
     },

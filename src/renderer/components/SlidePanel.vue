@@ -32,7 +32,7 @@ export default {
   flex-direction: column;
   background: var(--background);
   &.show {
-    right: 0px;
+    right: 0px !important;
   }
 }
 </style>

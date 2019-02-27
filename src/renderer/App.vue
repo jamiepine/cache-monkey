@@ -58,6 +58,8 @@ export default {
     if (dumpExists) {
       this.dumpDirectory = dumpDir;
     } else {
+      //  delete persisted fileIndex as we don't have a dump folder
+      localStorage.removeItem("fileIndex");
       // create dump folder
       fs.mkdir(dumpDir, err => {
         if (err) {
@@ -84,6 +86,7 @@ export default {
       if (localStorage.getItem("fileIndex")) {
         this.fileIndex = JSON.parse(localStorage.getItem("fileIndex"));
         this.dumpScanComplete = true;
+        this.evaluateFileIndex();
         this.initWatchers();
       } else {
         this.scanDump();
@@ -103,14 +106,14 @@ export default {
     },
     currentTask() {
       if (this.watcherRunning) {
-        setTimeout(() => (this.currentTask = "Waiting for changes..."), 2000);
+        setTimeout(() => (this.currentTask = "Waiting for changes..."), 12000);
       }
     }
   },
   methods: {
     initWatchers() {
       if (this.watcherRunning) return;
-      setTimeout(() => (this.watchBlocker = false), 5000);
+      setTimeout(() => (this.watchBlocker = false), 15000);
       for (let dir of this.watchDirectories) {
         const watcher = chokidar.watch(dir.dir, { persistent: true });
         this.watcherRunning = true;
@@ -122,6 +125,18 @@ export default {
           }
         });
         this.currentTask = "Waiting for changes...";
+      }
+    },
+    evaluateFileIndex() {
+      for (let i of Object.keys(this.fileIndex)) {
+        // discover filetypes
+        let type = this.fileIndex[i].type;
+        const dupeTypes = [];
+        for (let i = this.foundFiletypes.length; i-- > 0; ) {
+          if (this.foundFiletypes[i].type == type) dupeTypes.push(type);
+        }
+        if (dupeTypes.length <= 0)
+          this.foundFiletypes.push({ type, filtered: false });
       }
     },
     scanDump() {
@@ -215,6 +230,7 @@ export default {
           await this.processItem(directory, absoluteLocation + i, i);
         }
         this.processing = false;
+        this.totalAnalysed = 0;
         this.currentTask = "Scan complete";
         this.initWatchers();
         this.fileIndex = Object.assign({}, this.fileIndex);
@@ -253,6 +269,7 @@ export default {
           created: stats["ctime"],
           size: stats["size"]
         };
+        this.totalAnalysed += 1;
 
         if (this.fileIndex.hasOwnProperty(result.dumpKey.split(".")[0])) {
           this.currentTask = `${name} already in dump.`;
@@ -262,7 +279,6 @@ export default {
         }
 
         this.fileIndex[fileKey] = result;
-        this.totalAnalysed += 1;
 
         await copyFile(
           location,

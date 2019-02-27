@@ -6,7 +6,17 @@
       <h1>CacheMonkey</h1>
       <small>by Jamie Pine</small>
       <br>
-      <Input :editable="false" :value="currentTask" @update="(value) => text = value" :big="false"/>
+      <Input
+        class="transparent_input"
+        :editable="false"
+        :value="currentTask"
+        @update="(value) => text = value"
+        :big="false"
+      />
+      <div
+        :style="{'width': (((totalAnalysed / totalAnalysing) * 100) * 240 ) / 100  + 'px'}"
+        class="progress-bar"
+      />
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
       <button v-if="!processing" class="coolbtn margin-vertical" @click="$parent.scanAll">Scan Cache</button>
       <button v-else class="coolbtn margin-vertical" @click="processing = false">Abort Tasks</button>
@@ -27,12 +37,11 @@
       <b>{{totalAnalysed}}/{{totalAnalysing}}</b>
       <div style="opacity:0.3;">Content Loaded:</div>
       <b>{{content.length}}</b>
-      <div style="opacity:0.3;">dumpScanComplete:</div>
+      <!-- <div style="opacity:0.3;">dumpScanComplete:</div>
       <b>{{dumpScanComplete}}</b>
       <div style="opacity:0.3;">dirScanComplete</div>
       <b>{{dirScanComplete}}</b>
-      <br>
-
+      <br>-->
       <button class="coolbtn margin-vertical" @click="$parent.purgeDump">Purge Dump</button>
       <button class="coolbtn margin-vertical warning" @click="chooseWatchDir">Purge Cache</button>
       <button class="coolbtn margin-vertical danger" @click="chooseWatchDir">Purge Cache & Dump</button>
@@ -342,6 +351,19 @@ main {
 
 main > div {
   flex-basis: 50%;
+}
+
+.transparent_input {
+  .coolinput {
+    background: none !important;
+  }
+}
+.progress-bar {
+  height: 26px;
+  background: rgba(97, 97, 97, 0.23);
+  border-radius: 5px;
+  position: absolute;
+  margin-top: 94px;
 }
 
 .drives {
