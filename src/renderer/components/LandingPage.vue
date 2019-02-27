@@ -180,6 +180,7 @@ export default {
           return item.type && item.type != "unknown" && item.type != "gzip";
         }
       });
+
       // if (filter.length === 0)
       //   for (let i = 0; i < 50; i++) {
       //     filter.push({

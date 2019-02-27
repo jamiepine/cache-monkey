@@ -38,6 +38,7 @@ export default {
   async created() {
     this.initGlobalStyleVariables();
     // set default dump directory
+
     let userDir = Path.join(os.homedir())
       .split("\\")
       .join("/");
@@ -99,24 +100,29 @@ export default {
     },
     dirScanComplete() {
       this.initWatchers();
-      setTimeout(() => (this.watchBlocker = false), 5000);
+    },
+    currentTask() {
+      if (this.watcherRunning) {
+        setTimeout(() => (this.currentTask = "Waiting for changes..."), 2000);
+      }
     }
   },
   methods: {
     initWatchers() {
       if (this.watcherRunning) return;
+      setTimeout(() => (this.watchBlocker = false), 5000);
       for (let dir of this.watchDirectories) {
         const watcher = chokidar.watch(dir.dir, { persistent: true });
         this.watcherRunning = true;
         watcher.on("add", async path => {
-          if (this.watchBlocker !== true && this.dirScanComplete) {
-            // console.log("File", path, "has been added");
+          if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
+            console.log("File", path, "has been added");
             await this.processItem(dir.dir, path, path.split("Cache\\")[1]);
             this.fileIndex = Object.assign({}, this.fileIndex);
           }
         });
+        this.currentTask = "Waiting for changes...";
       }
-      this.currentTask = "Waiting for changes...";
     },
     scanDump() {
       if (this.dumpScanComplete) {
@@ -210,6 +216,7 @@ export default {
         }
         this.processing = false;
         this.currentTask = "Scan complete";
+        this.initWatchers();
         this.fileIndex = Object.assign({}, this.fileIndex);
         resolve();
       });
@@ -247,7 +254,7 @@ export default {
           size: stats["size"]
         };
 
-        if (this.fileIndex.hasOwnProperty(result.dumpKey)) {
+        if (this.fileIndex.hasOwnProperty(result.dumpKey.split(".")[0])) {
           this.currentTask = `${name} already in dump.`;
           return;
         } else {
