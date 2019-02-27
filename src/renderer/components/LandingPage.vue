@@ -8,7 +8,7 @@
       <br>
       <Input :editable="false" :value="currentTask" @update="(value) => text = value" :big="false"/>
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
-      <button v-if="!processing" class="coolbtn margin-vertical" @click="$parent.scanDump">Load Data</button>
+      <button v-if="!processing" class="coolbtn margin-vertical" @click="$parent.scanAll">Scan Cache</button>
       <button v-else class="coolbtn margin-vertical" @click="processing = false">Abort Tasks</button>
       <br>
 
@@ -33,7 +33,7 @@
       <b>{{dirScanComplete}}</b>
       <br>
 
-      <button class="coolbtn margin-vertical" @click="chooseWatchDir">Purge Dump</button>
+      <button class="coolbtn margin-vertical" @click="$parent.purgeDump">Purge Dump</button>
       <button class="coolbtn margin-vertical warning" @click="chooseWatchDir">Purge Cache</button>
       <button class="coolbtn margin-vertical danger" @click="chooseWatchDir">Purge Cache & Dump</button>
     </div>

@@ -30,6 +30,11 @@ export default {
     Sidebar,
     Panel
   },
+  data() {
+    return {
+      watcherRunning: false
+    };
+  },
   async created() {
     this.initGlobalStyleVariables();
     // set default dump directory
@@ -78,6 +83,7 @@ export default {
       if (localStorage.getItem("fileIndex")) {
         this.fileIndex = JSON.parse(localStorage.getItem("fileIndex"));
         this.dumpScanComplete = true;
+        this.initWatchers();
       } else {
         this.scanDump();
       }
@@ -98,10 +104,12 @@ export default {
   },
   methods: {
     initWatchers() {
+      if (this.watcherRunning) return;
       for (let dir of this.watchDirectories) {
         const watcher = chokidar.watch(dir.dir, { persistent: true });
+        this.watcherRunning = true;
         watcher.on("add", async path => {
-          if (this.watchBlocker !== true) {
+          if (this.watchBlocker !== true && this.dirScanComplete) {
             // console.log("File", path, "has been added");
             await this.processItem(dir.dir, path, path.split("Cache\\")[1]);
             this.fileIndex = Object.assign({}, this.fileIndex);
@@ -165,6 +173,7 @@ export default {
           this.fileIndex = Object.assign({}, this.fileIndex);
           this.dumpScanComplete = true;
           this.processing = false;
+          this.initWatchers();
           resolve();
         } catch (e) {
           this.processing = false;
@@ -177,6 +186,7 @@ export default {
       for (let directory of this.watchDirectories) {
         await this.scanDirectory(directory);
       }
+      this.initWatchers();
       this.dirScanComplete = true;
     },
     scanDirectory(directory) {
@@ -190,6 +200,7 @@ export default {
         this.processing = true;
         const directoryItems = await readdir(absoluteLocation);
         this.totalAnalysing = directoryItems.length;
+        this.totalAnalysed = 0;
         for (let i of directoryItems) {
           if (this.processing === false) {
             this.dirScanComplete = false;
@@ -254,7 +265,19 @@ export default {
         console.log(err);
       }
     },
-
+    purgeDump() {
+      return new Promise(async (resolve, reject) => {
+        this.currentTask = "Flushing the dump.";
+        let loop = Object.keys(this.fileIndex);
+        for (let i of loop) {
+          await fs.unlinkSync(
+            `${this.dumpDirectory}/${this.fileIndex[i].dumpKey}`
+          );
+        }
+        this.currentTask = "Dump cleared. Press scan to repopulate.";
+        this.fileIndex = {};
+      });
+    },
     // this method appends a <style> element with the current theme varibales at the end of the <body>
     initGlobalStyleVariables() {
       // convert theme object to CSS
