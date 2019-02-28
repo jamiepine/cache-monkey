@@ -13,17 +13,13 @@
     <small>Add one or several</small>
     <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
     <div class="flex-column">
-      <div
-        style="display: flex;    height: 37px;"
-        v-for="(i, index) of watchDirectories"
-        :key="index"
-      >
+      <div style="display: flex;    height: 37px;" v-for="i of watchDirectories" :key="i.dir">
         <Input @update="(value) => updateDirName(index, value)" :value="i.name" :big="true"/>
         <Input :readonly="true" :value="i.dir" :big="true"/>
         <button style="    margin-left: 4px;" class="coolbtn" @click="openDirectory(i.dir)">
           <icon :icon="['fa','folder-open']"/>
         </button>
-        <button style="    margin-left: 4px;" class="coolbtn" @click="openDirectory(i.dir)">
+        <button style="    margin-left: 4px;" class="coolbtn" @click="rmDir(i.dir)">
           <icon :icon="['fa','trash']"/>
         </button>
       </div>
@@ -64,7 +60,9 @@ export default {
       this.watchDirectories = Object.keys(obj).map(item => obj[item]);
       return this.watchDirectories;
     },
-    rmDir(index) {},
+    rmDir(index) {
+      this.watchDirectories.splice(index, 1);
+    },
     chooseDumpDir() {
       let dir = dialog.showOpenDialog({
         properties: ["openDirectory"]

@@ -112,25 +112,29 @@ export default {
   },
   methods: {
     initWatchers() {
-      if (this.watcherRunning) return;
-      setTimeout(() => (this.watchBlocker = false), 15000);
-      for (let dir of this.watchDirectories) {
-        const watcher = chokidar.watch(dir.dir, { persistent: true });
-        this.watcherRunning = true;
-        watcher.on("add", async path => {
-          if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
-            console.log("File", path, "has been added");
-            await this.processItem(dir.dir, path, path.split("Cache\\")[1]);
-            this.fileIndex = Object.assign({}, this.fileIndex);
-          }
-        });
-        this.currentTask = "Waiting for changes...";
-      }
+      // if (this.watcherRunning) return;
+      // setTimeout(() => (this.watchBlocker = false), 15000);
+      // for (let dir of this.watchDirectories) {
+      //   const watcher = chokidar.watch(dir.dir, { persistent: true });
+      //   this.watcherRunning = true;
+      //   watcher.on("add", async path => {
+      //     if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
+      //       console.log("File", path, "has been added");
+      //       let arr = path.split("/");
+      //       await this.processItem(dir.dir, path, arr[arr.length - 1]);
+      //       this.fileIndex = Object.assign({}, this.fileIndex);
+      //     }
+      //   });
+      //   this.currentTask = "Waiting for changes...";
+      // }
     },
     evaluateFileIndex() {
       for (let i of Object.keys(this.fileIndex)) {
-        if (!this.foundFiletypes.includes(this.fileIndex[i].type))
-          this.foundFiletypes.push(this.fileIndex[i].type);
+        if (this.fileIndex[i].hasOwnProperty("type")) {
+          let extention = this.fileIndex[i].type.split("/")[1];
+          if (extention && !this.foundFiletypes.includes(extention))
+            this.foundFiletypes.push(extention);
+        }
       }
     },
     scanDump() {
@@ -236,8 +240,9 @@ export default {
         const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
         const _type = fileType(buffer);
 
-        if (_type && _type.mime && !this.foundFiletypes.includes(_type.mime))
-          this.foundFiletypes.push(_type.mime);
+        let extention = _type.mime.split("/")[1];
+        if (extention && !this.foundFiletypes.includes(extention))
+          this.foundFiletypes.push(extention);
 
         const stats = await stat(location);
 
@@ -281,13 +286,36 @@ export default {
         this.currentTask = "Flushing the dump.";
         let loop = Object.keys(this.fileIndex);
         for (let i of loop) {
-          await fs.unlinkSync(
-            `${this.dumpDirectory}/${this.fileIndex[i].dumpKey}`
-          );
+          let key = `${this.dumpDirectory}/${this.fileIndex[i].dumpKey}`;
+          if (fs.existsSync(key)) await fs.unlinkSync(key);
         }
         this.currentTask = "Dump cleared. Press scan to repopulate.";
         this.fileIndex = {};
+        this.foundFiletypes = [];
+        resolve();
       });
+    },
+    purgeCache() {
+      return new Promise(async (resolve, reject) => {
+        this.currentTask = "Flushing the cache.";
+        for (let app of this.watchDirectories) {
+          console.log(app);
+          const content = await readdir(app.dir);
+          if (content) {
+            for (let i of content) {
+              // console.log(`${app.dir}/${i}`);
+              await fs.unlinkSync(`${app.dir}/${i}`);
+            }
+          }
+        }
+        this.currentTask = "Cache cleared. Note: Files are still in the dump.";
+        resolve();
+      });
+    },
+    async purgeBoth() {
+      await this.purgeDump();
+      await this.purgeCache();
+      this.currentTask = "Everything is gone :)";
     },
     // this method appends a <style> element with the current theme varibales at the end of the <body>
     initGlobalStyleVariables() {
@@ -341,6 +369,14 @@ export default {
       },
       set(value) {
         this.$store.state.dumpDirectory = value;
+      }
+    },
+    viewingItem: {
+      get() {
+        return this.$store.state.viewingItem;
+      },
+      set(value) {
+        this.$store.state.viewingItem = value;
       }
     },
     watchDirectories: {

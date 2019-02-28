@@ -2,8 +2,11 @@
   <div id="wrapper">
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
-      <br>
-      <h1>CacheMonkey</h1>
+      <h1
+        class="main-title"
+        @mouseover="title = 'CacheMonkey 🙈'"
+        @mouseout="title = 'CacheMonkey'"
+      >{{title}}</h1>
       <small>by Jamie Pine</small>
       <br>
       <Input
@@ -22,14 +25,15 @@
       <button v-else class="coolbtn margin-vertical" @click="processing = false">Abort Tasks</button>
       <br>
 
-      <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">All Filetypes Discovered:</div>
+      <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">Filetypes Discovered</div>
       <div class="flex">
         <div
           class="coolbtn margin-right"
           v-for="(i, index) of foundFiletypes"
           :key="index"
+          :class="{'filtered': currentFilter === i}"
           @click="filterItems(i)"
-        >{{i.split('/')[1] ? i.split('/')[1] : 'uh?'}}</div>
+        >{{i ? i : 'uh?'}}</div>
       </div>
 
       <!-- <div style="opacity:0.3;">Total Analysed:</div>
@@ -41,9 +45,26 @@
       <div style="opacity:0.3;">dirScanComplete</div>
       <b>{{dirScanComplete}}</b>
       <br>-->
-      <button class="coolbtn margin-vertical" @click="$parent.purgeDump">Purge Dump</button>
-      <button class="coolbtn margin-vertical warning">Purge Cache</button>
-      <button class="coolbtn margin-vertical danger">Purge Cache & Dump</button>
+      <br>
+      <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">Options</div>
+      <button
+        v-tippy="$store.state.tooltipSidebar"
+        title="This will permanently delete all files in the CacheMonkey dump directory. There is no confirm screen, this button is wild."
+        class="coolbtn margin-vertical"
+        @click="$parent.purgeDump"
+      >Purge Dump</button>
+      <button
+        v-tippy="$store.state.tooltipSidebar"
+        title="This will wipe the cache directory for every application you have added to CacheMonkey via the settings tab."
+        class="coolbtn margin-vertical warning"
+        @click="$parent.purgeCache"
+      >Purge Cache</button>
+      <button
+        v-tippy="$store.state.tooltipSidebar"
+        title="A big red button."
+        class="coolbtn margin-vertical danger"
+        @click="$parent.purgeBoth"
+      >Purge Cache & Dump</button>
     </div>
     <div class="content">
       <div
@@ -90,11 +111,15 @@ export default {
   },
   data() {
     return {
+      title: "CacheMonkey",
       currentFilter: false
     };
   },
   watch: {},
   methods: {
+    click() {
+      this.$root.$emit("modal", "FileView");
+    },
     open(link) {
       this.$electron.shell.openExternal(link);
     },
@@ -105,6 +130,7 @@ export default {
       return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
     },
     filterItems(type) {
+      if (this.currentFilter == type) return (this.currentFilter = "");
       this.currentFilter = type;
     }
   },
@@ -260,6 +286,9 @@ body {
   position: absolute;
   margin: 4px;
 }
+.main-title {
+  cursor: default;
+}
 .flex {
   display: flex;
   width: 280px;
@@ -318,11 +347,12 @@ main > div {
   }
 }
 .progress-bar {
-  height: 26px;
+  height: 29px;
   background: rgba(97, 97, 97, 0.23);
   border-radius: 5px;
   position: absolute;
-  margin-top: 94px;
+  margin-top: 77px;
+  margin-left: 1px;
 }
 
 .drives {
