@@ -7,7 +7,13 @@
         href="#"
         @click.prevent="open('https://twitter.com/jamiepine')"
       >
-        <h1 style="text-align:center">{{monkey}}</h1>
+        <!-- <h1 style="text-align:center">{{monkey}}</h1> -->
+        <div style="width:100%;margin-bottom:10px;">
+          <img v-if="monkey === 1" width="70px" src="../assets/monkey.svg">
+          <img v-else-if="monkey === 2" width="70px" src="../assets/monkey_cover_ears.svg">
+          <img v-else-if="monkey === 3" width="70px" src="../assets/monkey_cover_mouth.svg">
+          <img v-else-if="monkey === 4" width="70px" src="../assets/monkey_cover_eyes.svg">
+        </div>
         <h1 class="main-title logo">CacheMonkey</h1>
         <small style="opacity: 0.2;">
           by
@@ -29,13 +35,7 @@
         />
       </div>
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
-      <button
-        v-if="!processing"
-        @mouseover="monkey = '🙉'"
-        @mouseout="monkey = defaultMonkey"
-        class="coolbtn margin-vertical"
-        @click="$parent.scanAll"
-      >Scan Cache</button>
+      <button v-if="!processing" class="coolbtn margin-vertical" @click="$parent.scanAll">Scan Cache</button>
       <button v-else class="coolbtn margin-vertical" @click="processing = false">Abort Tasks</button>
       <br>
 
@@ -64,19 +64,23 @@
         title="This will permanently delete all files in the CacheMonkey dump directory. There is no confirm screen, this button is wild."
         class="coolbtn margin-vertical"
         @click="$parent.purgeDump"
+        @mouseover="monkey = 3"
+        @mouseout="monkey = 1"
       >Purge Dump</button>
       <button
         v-tippy="$store.state.tooltipSidebar"
         title="This will wipe the cache directory for every application you have added to CacheMonkey via the settings tab."
         class="coolbtn margin-vertical warning"
         @click="$parent.purgeCache"
+        @mouseover="monkey = 2"
+        @mouseout="monkey = 1"
       >Purge Cache</button>
       <button
         v-tippy="$store.state.tooltipSidebar"
         title="A big red button."
         class="coolbtn margin-vertical danger"
-        @mouseover="monkey = '🙊'"
-        @mouseout="monkey = defaultMonkey"
+        @mouseover="monkey = 4"
+        @mouseout="monkey = 1"
         @click="$parent.purgeBoth"
       >Purge Cache & Dump</button>
       <br>
@@ -130,8 +134,7 @@ export default {
   },
   data() {
     return {
-      defaultMonkey: "🙈",
-      monkey: "🙈",
+      monkey: 1,
       currentFilter: false
     };
   },
