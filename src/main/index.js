@@ -29,8 +29,7 @@ function createWindow() {
     height: 619,
     useContentSize: true,
     width: 1093,
-    frame: true,
-    titleBarStyle: "hidden",
+    frame: false,
     title: "CacheMonkey",
     webPreferences: {
       devTools: true,

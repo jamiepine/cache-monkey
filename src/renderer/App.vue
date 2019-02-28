@@ -1,7 +1,9 @@
 <template>
   <div>
     <Sidebar/>
-    <div class="topbar"/>
+    <div class="topbar">
+      <TrafficLights/>
+    </div>
     <div id="app">
       <Panel/>
       <Modal/>
@@ -12,6 +14,7 @@
 
 <script>
 import Panel from "./components/SlidePanel";
+import TrafficLights from "./components/TrafficLights";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters, mapState } from "vuex";
 import drivelist from "drivelist";
@@ -36,7 +39,8 @@ export default {
   components: {
     Sidebar,
     Panel,
-    Modal
+    Modal,
+    TrafficLights
   },
   data() {
     return {
@@ -526,8 +530,12 @@ body {
 .page {
   margin-left: 70px;
   padding: 20px;
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
+  background: var(--background2);
+  border-radius: 15px 0 0 0;
+  height: calc(100vh - 29px);
 }
 .page-container {
   flex: 1 1 auto;
