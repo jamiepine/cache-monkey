@@ -139,6 +139,7 @@ export default {
             let arr = path.split("/");
             await this.processItem(dir.dir, path, arr[arr.length - 1]);
             this.fileIndex = Object.assign({}, this.fileIndex);
+            this.currentTask = "Waiting for changes...";
           }
         });
         this.currentTask = "Waiting for changes...";

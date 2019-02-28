@@ -32,6 +32,7 @@
         <div
           :style="{'width': (((totalAnalysed / totalAnalysing) * 100) * 240 ) / 100  + 'px'}"
           class="progress-bar"
+          v-if="processing"
         />
       </div>
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
