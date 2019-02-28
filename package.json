@@ -74,6 +74,7 @@
     "read-chunk": "^3.0.0",
     "remote": "^0.2.6",
     "sqlite3": "^4.0.6",
+    "update-electron-app": "^1.3.0",
     "util": "^0.11.1",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
