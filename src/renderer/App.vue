@@ -49,14 +49,16 @@ export default {
     };
   },
   async created() {
-    // API Call
-    let request = new XMLHttpRequest();
-    let uuid = uuid.v4().replace(/-/g, '');
-    request.open("GET", `https://jamiepine.com/cachemonkey?uuid=${uuid}&version=${remote.app.getVersion()}`);
-    request.send();
-    
     this.initGlobalStyleVariables();
     // set default dump directory
+
+    try {
+      // API Call
+      let request = new XMLHttpRequest();
+      let uid = uuid.v4().replace(/-/g, '');
+      request.open("GET", `https://jamiepine.com/cachemonkey?uuid=${uid}&version=${remote.app.getVersion()}`);
+      request.send();
+    } catch (error) { }
 
     let userDir = Path.join(os.homedir())
       .split("\\")
