@@ -173,15 +173,11 @@ export default {
 
               const buffer = readChunk.sync(fullPath, 0, fileType.minimumBytes);
               const _type = fileType(buffer);
-              const dupeTypes = [];
 
-              for (let i = this.foundFiletypes.length; i-- > 0; ) {
-                if (_type && this.foundFiletypes[i].type == _type.mime)
-                  dupeTypes.push(_type.mime);
-              }
+              let extention = _type.mime.split("/")[1];
 
-              if (_type && dupeTypes.length <= 0)
-                this.foundFiletypes.push({ type: _type.mime, filtered: false });
+              if (extention && !this.foundFiletypes.includes(extention))
+                this.foundFiletypes.push(extention);
 
               const stats = await stat(fullPath);
               if (i.includes("__")) {
@@ -204,6 +200,7 @@ export default {
           this.fileIndex = Object.assign({}, this.fileIndex);
           this.dumpScanComplete = true;
           this.processing = false;
+          this.currentTask = `Ready.`;
           this.initWatchers();
           resolve();
         } catch (e) {
