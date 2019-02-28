@@ -117,7 +117,7 @@ export default {
   background-repeat: no-repeat;
 }
 .info-area {
-  margin: 10px;
+  margin: 20px;
   display: flex;
   flex-direction: column;
   max-width: 260px;

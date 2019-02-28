@@ -1,9 +1,12 @@
 <template>
-  <div id="app">
+  <div>
     <Sidebar/>
-    <Panel/>
-    <Modal/>
-    <router-view></router-view>
+    <div class="topbar"/>
+    <div id="app">
+      <Panel/>
+      <Modal/>
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -497,16 +500,25 @@ body {
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background: var(--background);
+  background: var(--sidebar);
   color: var(--text);
   &.hidden {
     overflow: hidden;
   }
 }
+.topbar {
+  height: 25px;
+  width: 100%;
+  -webkit-app-region: drag;
+  background: var(--sidebar);
+  position: fixed;
+  z-index: 999;
+}
 #app {
   display: flex;
   transition: 200ms;
-  background-color: var(--background);
+
+  /* background-color: var(--background); */
   color: var(--text);
 }
 .app {

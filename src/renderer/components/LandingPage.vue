@@ -8,7 +8,10 @@
           @mouseover="title = 'CacheMonkey 🙈'"
           @mouseout="title = 'CacheMonkey'"
         >{{title}}</h1>
-        <small>by Jamie Pine</small>
+        <small>
+          by
+          <b>Jamie Pine</b>
+        </small>
       </a>
       <br>
       <Input
@@ -40,9 +43,7 @@
 
       <!-- <div style="opacity:0.3;">Total Analysed:</div>
       <b>{{totalAnalysed}}/{{totalAnalysing}}</b>
-      <div style="opacity:0.3;">Content Loaded:</div>
-      <b>{{content.length}}</b>-->
-      <!-- <div style="opacity:0.3;">dumpScanComplete:</div>
+      <div style="opacity:0.3;">dumpScanComplete:</div>
       <b>{{dumpScanComplete}}</b>
       <div style="opacity:0.3;">dirScanComplete</div>
       <b>{{dirScanComplete}}</b>
@@ -67,6 +68,9 @@
         class="coolbtn margin-vertical danger"
         @click="$parent.purgeBoth"
       >Purge Cache & Dump</button>
+      <br>
+      <div style="opacity:0.3;">Content Loaded:</div>
+      <b>{{content.length}}</b>
     </div>
     <div class="content">
       <div
@@ -278,7 +282,6 @@ export default {
 
 body {
   font-family: "Source Sans Pro", sans-serif;
-  background: var(--background);
 }
 .image {
   width: 100px;
@@ -346,9 +349,12 @@ body {
   flex-direction: column;
   background: var(--background2);
   height: 100vh;
+  border-radius: 15px 0 0 0;
+  margin-top: 25px;
 }
 .content {
   margin-left: 360px;
+  margin-top: 25px;
 }
 #logo {
   height: auto;
