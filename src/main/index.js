@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron"; // eslint-disable-line
+import { app, BrowserWindow, dialog } from "electron"; // eslint-disable-line
 
 /**
  * Set `__static` path to static files in production
@@ -15,11 +15,6 @@ const winURL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:9080"
     : `file://${__dirname}/index.html`;
-
-require("update-electron-app")({
-  repo: "https://github.com/jamiepine/cache-monkey",
-  updateInterval: "1 hour"
-});
 
 function createWindow() {
   /**
@@ -66,16 +61,74 @@ app.on("activate", () => {
  * Uncomment the following code below and install `electron-updater` to
  * support auto updating. Code Signing with a valid certificate is required.
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
+ import { autoUpdater } from 'electron-updater'
  */
+import log from "electron-log";
+import { autoUpdater } from "electron-updater";
+// autoUpdater.checkForUpdatesAndNotify();
 
-/*
-import { autoUpdater } from 'electron-updater'
+app.checkForUpdates = async () => {
+  autoUpdater.checkForUpdates();
+};
 
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall()
-})
+autoUpdater.on("checking-for-update", () => {
+  dialog.showMessageBox({
+    type: "info",
+    title: "Checking for updates",
+    message: `Checking for updates...\nFeed URL: ${autoUpdater.getFeedURL()}\nCurrent: ${
+      autoUpdater.currentVersion
+    }`
+  });
+});
 
-app.on('ready', () => {
-  if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
-})
- */
+autoUpdater.on("error", error => {
+  dialog.showErrorBox(
+    "Error: ",
+    error == null ? "unknown" : (error.stack || error).toString()
+  );
+});
+
+autoUpdater.on("update-available", info => {
+  dialog.showMessageBox(
+    {
+      type: "info",
+      title: "Update Available",
+      message: `New update available, would you like to update now?\n\nVersion: ${
+        info.version
+      }`,
+      buttons: ["Yes", "No"]
+    },
+    buttonIndex => {
+      if (buttonIndex == 0) {
+        autoUpdater.downloadUpdate();
+      }
+    }
+  );
+});
+
+autoUpdater.on("update-not-available", info => {
+  dialog.showMessageBox({
+    title: "No Updates",
+    message: `Current version is already up-to-date\n\nVersion: ${info.version}`
+  });
+});
+
+autoUpdater.on("update-downloaded", info => {
+  dialog.showMessageBox(
+    {
+      title: "Updates Downloaded",
+      message: `Updates successfully downloaded, application will now quit...\n\nVersion: ${
+        info.version
+      }`
+    },
+    () => {
+      setImmediate(() => autoUpdate.quitAndInstall());
+    }
+  );
+});
+
+// app.on("ready", () => {
+//   log.transports.file.level = "debug";
+//   autoUpdater.logger = log;
+//   autoUpdater.checkForUpdates();
+// });

@@ -1,11 +1,36 @@
 <template>
   <div class="buttons">
     <div class="button close">
-      <a class="button-text closebutton" href="#">&#215;</a>
+      <a class="button-text closebutton" href="#">
+        <svg width="6px" height="6px" viewBox="0 0 155 155" version="1.1">
+          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g transform="translate(-159.000000, -205.000000)" fill="#540202">
+              <path
+                d="M236.790211,264.82233 L296.187181,205.425361 L313.86485,223.10303 L254.467881,282.5 L313.86485,341.89697 L296.187181,359.574639 L236.790211,300.17767 L177.393241,359.574639 L159.715572,341.89697 L219.112541,282.5 L159.715572,223.10303 L177.393241,205.425361 L236.790211,264.82233 Z"
+              ></path>
+            </g>
+          </g>
+        </svg>
+      </a>
       <!-- close button link -->
     </div>
     <div class="button minimize">
-      <a class="button-text minimizebutton" href="#">&ndash;</a>
+      <a class="button-text minimizebutton" href="#">
+        <svg
+          width="9px"
+          height="9px"
+          viewBox="0 0 188 25"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+        >
+          <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="Desktop" transform="translate(-632.000000, -270.000000)" fill="#995700">
+              <rect id="Rectangle" x="632.17544" y="270" width="187" height="25"></rect>
+            </g>
+          </g>
+        </svg>
+      </a>
       <!-- minimize button link -->
     </div>
     <div class="button zoom">
@@ -50,11 +75,12 @@ export default {};
   position: absolute;
   margin-top: -1px;
   &.closebutton {
-    margin-top: -2px;
-    margin-left: 0.5px;
+    margin-top: -3px;
+    margin-left: 2px;
   }
   &.minimizebutton {
-    margin-left: 1.5px;
+    margin-left: 0.5px;
+    margin-top: -0.5px;
   }
   &.zoombutton {
     margin-top: -1px;

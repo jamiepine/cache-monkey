@@ -23,13 +23,14 @@
       </div>
     </a>
 
-    <div class="sidebar-version">{{ version }}</div>
+    <div @click="devtools" @contextmenu.prevent="update" class="sidebar-version">{{ version }}</div>
   </div>
 </template>
 
 <script>
 const { shell } = require("electron");
-const { app } = require("electron").remote;
+const { remote } = require("electron");
+const win = remote.getCurrentWindow();
 
 export default {
   name: "home",
@@ -37,10 +38,16 @@ export default {
   mounted() {},
   data() {
     return {
-      version: app.getVersion()
+      version: remote.app.getVersion()
     };
   },
   methods: {
+    update() {
+      remote.app.checkForUpdates();
+    },
+    devtools() {
+      win.openDevTools();
+    },
     open(link) {
       shell.openExternal(link);
     }

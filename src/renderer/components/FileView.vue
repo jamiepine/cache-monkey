@@ -3,7 +3,7 @@
     <div class="image-view" v-if="viewing.type == 'mp4'">
       <div class="video-big">
         <video class="player" height="100px" playsinline loop controls>
-            <source :src="`${dumpDirectory}/${viewing.dumpKey}`" type="video/mp4" />
+          <source :src="`${dumpDirectory}/${viewing.dumpKey}`" type="video/mp4">
         </video>
       </div>
     </div>
@@ -24,8 +24,6 @@
       <div style="opacity:0.3;">Origin Location</div>
       <div>{{viewing.originLocation}}</div>
       <br>
-      <button class="coolbtn margin-vertical">Open</button>
-      <br>
       <div style="opacity:0.3;">Dump Location</div>
       <div>{{dumpDirectory + '/' + viewing.dumpKey}}</div>
       <button class="coolbtn margin-vertical">Open</button>
@@ -35,6 +33,7 @@
         @click="save(viewing)"
         class="coolbtn margin-vertical"
       >{{saved ? 'Done!' :'Save To Pictures'}}</button>
+      <button @click="save(viewing)" class="coolbtn margin-vertical danger">Delete Everywhere</button>
       <br>
     </div>
   </div>
