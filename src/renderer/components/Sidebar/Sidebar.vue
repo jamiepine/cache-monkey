@@ -23,13 +23,12 @@
       </div>
     </a>
 
-    <div @click="devtools" @contextmenu.prevent="update" class="sidebar-version">{{ version }}</div>
+    <div @contextmenu.prevent="devtools" class="sidebar-version">{{ version }}</div>
   </div>
 </template>
 
 <script>
-const { shell } = require("electron");
-const { remote } = require("electron");
+const { shell, remote } = require("electron");
 const win = remote.getCurrentWindow();
 
 export default {
@@ -42,9 +41,6 @@ export default {
     };
   },
   methods: {
-    update() {
-      remote.app.checkForUpdates();
-    },
     devtools() {
       win.openDevTools();
     },
