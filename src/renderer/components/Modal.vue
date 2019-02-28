@@ -90,7 +90,7 @@ export default {
   height: 100vh;
   background: #000;
   opacity: 0.95;
-  z-index: 900090;
+  z-index: 9090;
   transition: 1s;
 }
 
@@ -106,7 +106,7 @@ export default {
   border-radius: 5px;
   background: var(--background);
   position: fixed;
-  z-index: 900091;
+  z-index: 9091;
   overflow: hidden;
   opacity: 1;
 }

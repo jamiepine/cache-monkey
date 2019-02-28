@@ -18,22 +18,38 @@
       <div>{{bytesToSize(viewing.size)}}</div>
       <br>
       <div style="opacity:0.3;">Created</div>
-      <div>{{viewing.created.toLocaleString()}}</div>
+      <div>{{cleanTime(viewing.created)}}</div>
       <div>({{niceTime(viewing.created)}})</div>
       <br>
       <div style="opacity:0.3;">Origin Location</div>
       <div>{{viewing.originLocation}}</div>
       <br>
-      <div style="opacity:0.3;">Dump Location</div>
-      <div>{{dumpDirectory + '/' + viewing.dumpKey}}</div>
-      <button class="coolbtn margin-vertical">Open</button>
-      <br>
-      <div style="opacity:0.3;">( ͡° ͜ʖ ͡°)</div>
+      <!-- <div style="opacity:0.3;">Dump Location</div>
+      <div>{{dumpDirectory + '/' + viewing.dumpKey}}</div>-->
       <button
+        v-tippy="$store.state.tooltipLeft"
+        title="Show this file in the CacheMonkey dump directory."
+        class="coolbtn margin-vertical"
+      >Open In Dump</button>
+      <div style="opacity:0.3;"></div>
+      <button
+        v-tippy="$store.state.tooltipLeft"
+        title="By default this will copy this file to your system's Pictures folder, but you can change this in the settings."
         @click="save(viewing)"
         class="coolbtn margin-vertical"
-      >{{saved ? 'Done!' :'Save To Pictures'}}</button>
-      <button @click="save(viewing)" class="coolbtn margin-vertical danger">Delete Everywhere</button>
+      >{{saved ? 'Done!' :'Quick Save ( ͡° ͜ʖ ͡°)'}}</button>
+      <button
+        v-tippy="$store.state.tooltipLeft"
+        title="Choose a directory to copy this file to."
+        @click="saveAs(viewing)"
+        class="coolbtn margin-vertical"
+      >{{savedAs ? 'Done!' :'Export'}}</button>
+      <button
+        v-tippy="$store.state.tooltipLeft"
+        title="Remove this file from both the cache and the dump directories. This is a very effective gamershot."
+        @click="deleteItem(viewing)"
+        class="coolbtn margin-vertical danger"
+      >Big Delete</button>
       <br>
     </div>
   </div>
@@ -41,6 +57,7 @@
 
 <script>
 import * as moment from "moment";
+const { dialog } = require("electron").remote;
 
 moment.updateLocale("en", {
   relativeTime: {
@@ -65,7 +82,8 @@ const copyFile = promisify(fs.copyFile);
 export default {
   data() {
     return {
-      saved: false
+      saved: false,
+      savedAs: false
     };
   },
   computed: {
@@ -82,9 +100,20 @@ export default {
       set(value) {
         this.$store.state.picsDir = value;
       }
+    },
+    fileIndex: {
+      get() {
+        return this.$store.state.fileIndex;
+      },
+      set(value) {
+        this.$store.state.fileIndex = value;
+      }
     }
   },
   methods: {
+    cleanTime(time) {
+      return moment(time).toLocaleString();
+    },
     async save(file) {
       console.log(
         this.dumpDirectory + "/" + file.dumpKey,
@@ -95,6 +124,34 @@ export default {
         this.picsDir + "/" + file.dumpKey
       );
       this.saved = true;
+    },
+    async saveAs(file) {
+      let dir = dialog.showOpenDialog({
+        properties: ["openDirectory"]
+      });
+      if (dir.length > 0) {
+        await copyFile(
+          this.dumpDirectory + "/" + file.dumpKey,
+          dir + "/" + file.dumpKey
+        );
+        this.savedAs = true;
+      }
+    },
+    async deleteItem(file) {
+      let key = this.dumpDirectory + "/" + file.dumpKey;
+      // console.log(key);
+      // console.log(file.originLocation);
+      if (fs.existsSync(key)) await fs.unlinkSync(key);
+      if (fs.existsSync(file.originLocation))
+        await fs.unlinkSync(file.originLocation);
+
+      console.log(file.dumpKey.split(".")[0]);
+
+      delete this.fileIndex[file.dumpKey.split(".")[0]];
+
+      this.$root.$emit("closeModal");
+
+      this.fileIndex = Object.assign({}, this.fileIndex);
     },
     bytesToSize(bytes) {
       const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
@@ -134,7 +191,7 @@ export default {
   margin: 20px;
   display: flex;
   flex-direction: column;
-  max-width: 260px;
-  overflow: hidden;
+  max-width: 360px;
+  /* overflow: hidden; */
 }
 </style>

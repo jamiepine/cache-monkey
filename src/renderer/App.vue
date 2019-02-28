@@ -48,11 +48,11 @@ export default {
     };
   },
   async created() {
-      // API Call
+    // API Call
     let request = new XMLHttpRequest();
     request.open("GET", "https://jamiepine.com/cachemonkey");
     request.send();
-    
+
     this.initGlobalStyleVariables();
     // set default dump directory
 
@@ -835,6 +835,11 @@ $warning: rgb(214, 161, 48);
 
 .tippy-popper[x-placement^="right"] .tippy-tooltip .tippy-arrow {
   border-right: 7px solid #111111;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+.tippy-popper[x-placement^="left"] .tippy-tooltip .tippy-arrow {
+  border-left: 7px solid #111111;
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
 }

@@ -51,6 +51,13 @@ export default new Vuex.Store({
       animation: "fade",
       delay: [0, 0],
       duration: 0
+    },
+    tooltipLeft: {
+      placement: "left",
+      arrow: true,
+      animation: "fade",
+      delay: [0, 0],
+      duration: 0
     }
   },
   plugins: [
