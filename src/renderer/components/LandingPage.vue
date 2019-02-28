@@ -2,31 +2,40 @@
   <div id="wrapper">
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
-      <a href="#" @click.prevent="open('https://twitter.com/jamiepine')">
-        <h1
-          class="main-title"
-          @mouseover="title = 'CacheMonkey 🙈'"
-          @mouseout="title = 'CacheMonkey'"
-        >{{title}}</h1>
-        <small>
+      <a
+        style="text-align: center;"
+        href="#"
+        @click.prevent="open('https://twitter.com/jamiepine')"
+      >
+        <h1 style="text-align:center">{{monkey}}</h1>
+        <h1 class="main-title logo">CacheMonkey</h1>
+        <small style="opacity: 0.2;">
           by
           <b>Jamie Pine</b>
         </small>
       </a>
       <br>
-      <Input
-        class="transparent_input"
-        :editable="false"
-        :value="currentTask"
-        @update="(value) => text = value"
-        :big="false"
-      />
-      <div
-        :style="{'width': (((totalAnalysed / totalAnalysing) * 100) * 240 ) / 100  + 'px'}"
-        class="progress-bar"
-      />
+      <div class="info-bar">
+        <Input
+          class="transparent_input"
+          :editable="false"
+          :value="currentTask"
+          @update="(value) => text = value"
+          :big="false"
+        />
+        <div
+          :style="{'width': (((totalAnalysed / totalAnalysing) * 100) * 240 ) / 100  + 'px'}"
+          class="progress-bar"
+        />
+      </div>
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
-      <button v-if="!processing" class="coolbtn margin-vertical" @click="$parent.scanAll">Scan Cache</button>
+      <button
+        v-if="!processing"
+        @mouseover="monkey = '🙉'"
+        @mouseout="monkey = defaultMonkey"
+        class="coolbtn margin-vertical"
+        @click="$parent.scanAll"
+      >Scan Cache</button>
       <button v-else class="coolbtn margin-vertical" @click="processing = false">Abort Tasks</button>
       <br>
 
@@ -66,6 +75,8 @@
         v-tippy="$store.state.tooltipSidebar"
         title="A big red button."
         class="coolbtn margin-vertical danger"
+        @mouseover="monkey = '🙊'"
+        @mouseout="monkey = defaultMonkey"
         @click="$parent.purgeBoth"
       >Purge Cache & Dump</button>
       <br>
@@ -119,7 +130,8 @@ export default {
   },
   data() {
     return {
-      title: "CacheMonkey",
+      defaultMonkey: "🙈",
+      monkey: "🙈",
       currentFilter: false
     };
   },
@@ -376,12 +388,15 @@ main > div {
     background: none !important;
   }
 }
+.info-bar {
+  position: relative;
+}
 .progress-bar {
   height: 29px;
   background: rgba(97, 97, 97, 0.23);
   border-radius: 5px;
   position: absolute;
-  margin-top: 65px;
+  top: 1px;
   margin-left: 1px;
 }
 
