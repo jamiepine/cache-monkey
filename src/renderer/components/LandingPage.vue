@@ -396,7 +396,7 @@ main > div {
   background: rgba(97, 97, 97, 0.23);
   border-radius: 5px;
   position: absolute;
-
+  top: 1px;
   margin-left: 1px;
 }
 
