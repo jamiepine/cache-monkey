@@ -2,6 +2,7 @@
   <div id="app">
     <Sidebar/>
     <Panel/>
+    <Modal/>
     <router-view></router-view>
   </div>
 </template>
@@ -11,8 +12,11 @@ import Panel from "./components/SlidePanel";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters, mapState } from "vuex";
 import drivelist from "drivelist";
+import Modal from "./components/Modal";
 import { promisify } from "util";
-const { dialog } = require("electron").remote;
+const remote = require("electron").remote;
+const dialoge = remote.dialog;
+const win = remote.getCurrentWindow();
 const Path = require("path");
 const fs = require("fs");
 const readChunk = require("read-chunk");
@@ -28,7 +32,8 @@ export default {
   name: "cachemonkey",
   components: {
     Sidebar,
-    Panel
+    Panel,
+    Modal
   },
   data() {
     return {
@@ -131,7 +136,7 @@ export default {
     evaluateFileIndex() {
       for (let i of Object.keys(this.fileIndex)) {
         if (this.fileIndex[i].hasOwnProperty("type")) {
-          let extention = this.fileIndex[i].type.split("/")[1];
+          let extention = this.fileIndex[i].type;
           if (extention && !this.foundFiletypes.includes(extention))
             this.foundFiletypes.push(extention);
         }
@@ -246,14 +251,14 @@ export default {
 
         const stats = await stat(location);
 
-        const type = _type ? _type.mime : "unknown";
+        const type = _type ? _type.mime.split("/")[1] : "unknown";
 
         let fileKey = `${directory.name}__${name}__${new Date(
           stats["ctime"]
         ).getTime()}`;
 
         const fileKeyWithExtention =
-          type !== "unknown" ? `${fileKey}.${type.split("/")[1]}` : fileKey;
+          type !== "unknown" ? `${fileKey}.${type}` : fileKey;
 
         let result = {
           originLocation: location,
@@ -293,6 +298,11 @@ export default {
         this.fileIndex = {};
         this.foundFiletypes = [];
         resolve();
+        win.webContents.session.clearCache(() => {
+          console.log(
+            "Attention: CacheMonkey Cache-Ception Prevention Transcension"
+          );
+        });
       });
     },
     purgeCache() {

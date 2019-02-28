@@ -2,12 +2,14 @@
   <div id="wrapper">
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
-      <h1
-        class="main-title"
-        @mouseover="title = 'CacheMonkey 🙈'"
-        @mouseout="title = 'CacheMonkey'"
-      >{{title}}</h1>
-      <small>by Jamie Pine</small>
+      <a href="#" @click.prevent="open('https://twitter.com/jamiepine')">
+        <h1
+          class="main-title"
+          @mouseover="title = 'CacheMonkey 🙈'"
+          @mouseout="title = 'CacheMonkey'"
+        >{{title}}</h1>
+        <small>by Jamie Pine</small>
+      </a>
       <br>
       <Input
         class="transparent_input"
@@ -75,7 +77,8 @@
         :style="{ 'background-image': `url(file://${dumpDirectory}/${i.dumpKey})` }"
       >
         <div class="hover-info">
-          <div class="blob" v-if="i.type">{{i.type.split('/')[1]}}</div>
+          <div class="blob" v-if="i.type">{{i.type}}</div>
+          <!-- <div class="blob blob2" v-if="i.size">{{bytesToSize(i.size) }}</div> -->
           <!-- {{bytesToSize(i.size)}} -->
         </div>
       </div>
@@ -89,6 +92,7 @@
 <script>
 import drivelist from "drivelist";
 import { promisify } from "util";
+const { shell } = require("electron");
 const { dialog } = require("electron").remote;
 const Path = require("path");
 const fs = require("fs");
@@ -117,7 +121,8 @@ export default {
   },
   watch: {},
   methods: {
-    click() {
+    click(item) {
+      this.viewing = item;
       this.$root.$emit("modal", "FileView");
     },
     open(link) {
@@ -132,6 +137,9 @@ export default {
     filterItems(type) {
       if (this.currentFilter == type) return (this.currentFilter = "");
       this.currentFilter = type;
+    },
+    open(link) {
+      shell.openExternal(link);
     }
   },
   computed: {
@@ -158,6 +166,14 @@ export default {
     },
     autoStart() {
       return this.$store.state.autoStart;
+    },
+    viewing: {
+      get() {
+        return this.$store.state.viewingItem;
+      },
+      set(value) {
+        this.$store.state.viewingItem = value;
+      }
     },
     processing: {
       get() {
@@ -272,10 +288,14 @@ body {
   float: left;
   background-size: cover;
   cursor: pointer;
+  position: relative;
   /* transition: 100ms; */
 }
 .image:hover {
   opacity: 0.7;
+  .blob2 {
+    display: block;
+  }
 }
 .blob {
   padding: 5px;
@@ -285,6 +305,10 @@ body {
   font-weight: bold;
   position: absolute;
   margin: 4px;
+}
+.blob2 {
+  display: none;
+  top: 20px;
 }
 .main-title {
   cursor: default;
@@ -351,7 +375,7 @@ main > div {
   background: rgba(97, 97, 97, 0.23);
   border-radius: 5px;
   position: absolute;
-  margin-top: 77px;
+  margin-top: 65px;
   margin-left: 1px;
 }
 

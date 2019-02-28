@@ -81,7 +81,7 @@ export default {
   position: absolute;
   width: 100%;
   height: 100vh;
-  background: #44484e;
+  background: #000;
   opacity: 0.95;
   z-index: 900090;
   transition: 1s;
@@ -91,8 +91,9 @@ export default {
   left: 0;
   right: 0;
   margin: auto;
-  width: 500px;
+  width: 80vw;
   min-height: 200px;
+  height: 70vh;
   margin-top: 100px;
   box-shadow: 0px 2px 120px 0px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
@@ -156,7 +157,7 @@ export default {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.2s;
 }
 
 .fade-enter,
@@ -171,25 +172,25 @@ export default {
 .slideup-leave-active {
   transform: scale(1);
   opacity: 1;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.05);
+  transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.05);
 }
 
 .slideup-leave-to,
 .slideup-enter {
   transform: scale(0.98);
   opacity: 0;
-  transition: all 0.2s reverse cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.1s reverse cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .slideupmodal-enter {
   transform: translateY(-50px);
   opacity: 1;
-  transition: 200ms;
+  transition: 100ms;
 }
 
 .slideupmodal-leave {
   transform: translateY(0px);
   opacity: 1;
-  transition: 200ms;
+  transition: 100ms;
 }
 </style>

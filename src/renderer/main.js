@@ -37,6 +37,9 @@ library.add({
 
 Vue.component("icon", FontAwesomeIcon);
 
+import vshortkey from "vue-shortkey";
+Vue.use(vshortkey);
+
 // Vue Tippy
 import VueTippy from "vue-tippy";
 Vue.use(VueTippy);

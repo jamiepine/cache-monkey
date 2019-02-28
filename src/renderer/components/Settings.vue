@@ -1,19 +1,20 @@
 <template>
   <div class="page">
-    <br>
     <h2>Settings</h2>
     <!-- <small>by Jamie Pine</small> -->
     <br>
     <h4>Dump Directory</h4>
     <small>This is the location where cache files are copied so that the originals are not modified.</small>
-    <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
-    <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
+    <div class="flex-row">
+      <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
+      <button class="coolbtn" style="height: 37px;" @click="chooseDumpDir">Choose</button>
+    </div>
     <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
     <h4>Application Cache Folders</h4>
     <small>Add one or several</small>
     <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
     <div class="flex-column">
-      <div style="display: flex;    height: 37px;" v-for="i of watchDirectories" :key="i.dir">
+      <div style="display: flex; height: 37px;" v-for="i of watchDirectories" :key="i.dir">
         <Input @update="(value) => updateDirName(index, value)" :value="i.name" :big="true"/>
         <Input :readonly="true" :value="i.dir" :big="true"/>
         <button style="    margin-left: 4px;" class="coolbtn" @click="openDirectory(i.dir)">
@@ -24,6 +25,12 @@
         </button>
       </div>
     </div>
+    <br>
+    <h4>Save To Pictures Directory</h4>
+    <small>This isn't important, but this is the direcotry that the "Save to Pictures" button copies the file to. Good for efficiently nabbing memes... and stuff.</small>
+    <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
+    <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
+    <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
   </div>
 </template>
 

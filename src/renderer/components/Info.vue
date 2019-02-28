@@ -1,6 +1,5 @@
 <template>
   <div class="page">
-    <br>
     <h2>About CacheMonkey</h2>
     <small>...and some helpful info</small>
     <br>
@@ -29,14 +28,19 @@
       <a
         href="#"
         @click.prevent="open('https://github.com/jamiepine/cache-monkey')"
-      >GitHub</a>, I made it in just two days so it could use a clean-up. It's built with NodeJS, VueJS and Electron (I've disabled caching, don't worry about possible cache-ception).
+      >GitHub</a>, I made it in just two days so it could use a clean-up. It's built with NodeJS, VueJS and Electron (I've disabled caching, don't worry about possible cache-ception). Massive thanks to
+      <a
+        href="#"
+        @click.prevent="open('https://twtter.com/TheTetrabyte')"
+      >Tetrabyte</a> for working with me to get this app released so quickly.
+      >
     </p>
     <h4>👀 Watch me build it!</h4>
     <p>
       I built this app in a YouTube video, watch it
       <a
         href="#"
-        @click.prevent="open('https://youtube.com/jamiepine')"
+        @click.prevent="open('https://www.youtube.com/playlist?list=PLElqxO5aTpgxJWkOAIc26E4D7FhIdBT2D')"
       >here.</a>
     </p>
   </div>

@@ -17,13 +17,17 @@
         <icon class="icon" :icon="['fa', 'heart']"></icon>
       </div>
     </router-link>
-    <div v-tippy="$store.state.tooltipSidebar" title="Twitter" class="sidebar-item">
-      <icon class="icon" :icon="['fab', 'twitter']"></icon>
-    </div>
+    <a href="#" @click.prevent="open('https://twitter.com/jamiepine')">
+      <div v-tippy="$store.state.tooltipSidebar" title="Get Help" class="sidebar-item">
+        <icon class="icon" :icon="['fab', 'twitter']"></icon>
+      </div>
+    </a>
   </div>
 </template>
 
 <script>
+const { shell } = require("electron");
+
 export default {
   name: "home",
   components: {},
@@ -31,7 +35,11 @@ export default {
   data() {
     return {};
   },
-  methods: {}
+  methods: {
+    open(link) {
+      shell.openExternal(link);
+    }
+  }
 };
 </script>
 
