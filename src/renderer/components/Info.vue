@@ -25,7 +25,7 @@
     <p>In theory, anything with a "Cache" folder, if you can locate it, we should be able to convert it to the original filetype and allow you to view it with this app.</p>
     <h4>🛠 Developers, you can help!</h4>
     <p>
-      The source code for this app is avalible on
+      The source code for this app is available on
       <a
         href="#"
         @click.prevent="open('https://github.com/jamiepine/cache-monkey')"
