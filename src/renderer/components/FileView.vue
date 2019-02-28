@@ -1,6 +1,13 @@
 <template>
   <div v-if="viewing" class="file-view">
-    <div class="image-view">
+    <div class="image-view" v-if="viewing.type == 'mp4'">
+      <div class="video-big">
+        <video class="player" height="100px" playsinline loop controls>
+            <source :src="`${dumpDirectory}/${viewing.dumpKey}`" type="video/mp4" />
+        </video>
+      </div>
+    </div>
+    <div class="image-view" v-else>
       <div
         class="image-big"
         :style="{ 'background-image': `url(file://${dumpDirectory}/${viewing.dumpKey})` }"
@@ -11,7 +18,7 @@
       <div>{{bytesToSize(viewing.size)}}</div>
       <br>
       <div style="opacity:0.3;">Created</div>
-      <div>{{viewing.created}}</div>
+      <div>{{viewing.created.toLocaleString()}}</div>
       <div>({{niceTime(viewing.created)}})</div>
       <br>
       <div style="opacity:0.3;">Origin Location</div>
@@ -107,6 +114,14 @@ export default {
 .file-view {
   display: flex;
   flex-direction: row;
+}
+.video-big {
+  left: 0;
+  right: 0;
+  margin: auto;
+  min-height: 200px;
+  margin-top: 100px;
+  float: left;
 }
 .image-big {
   height: 70vh;
