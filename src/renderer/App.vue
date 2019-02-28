@@ -494,6 +494,8 @@ export default {
 };
 </script>
 <style lang="scss">
+/* @import url("https://fonts.googleapis.com/css?family=Amaranth:700"); */
+
 /* Big boy global styles */
 body {
   margin: 0;
@@ -506,6 +508,10 @@ body {
   &.hidden {
     overflow: hidden;
   }
+}
+.logo {
+  /* font-family: "Amaranth", sans-serif; */
+  font-size: 27px;
 }
 .topbar {
   height: 25px;
@@ -535,7 +541,7 @@ body {
   flex-direction: column;
   background: var(--background2);
   border-radius: 15px 0 0 0;
-  height: calc(100vh - 29px);
+  min-height: calc(100vh - 29px);
 }
 .page-container {
   flex: 1 1 auto;
