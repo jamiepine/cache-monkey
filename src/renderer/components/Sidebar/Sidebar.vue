@@ -22,18 +22,23 @@
         <icon class="icon" :icon="['fab', 'twitter']"></icon>
       </div>
     </a>
+
+    <div class="sidebar-version">{{ version }}</div>
   </div>
 </template>
 
 <script>
 const { shell } = require("electron");
+const { app } = require("electron").remote;
 
 export default {
   name: "home",
   components: {},
   mounted() {},
   data() {
-    return {};
+    return {
+      version: app.getVersion()
+    };
   },
   methods: {
     open(link) {
@@ -71,6 +76,16 @@ export default {
   &:hover {
     background: var(--avatar);
   }
+}
+.sidebar-version {
+  color: var(--faintText);
+  bottom: 0;
+  position: absolute;
+  text-align: center;
+  width: 70px;
+  font-size: 12px;
+  padding: 12px;
+  font-weight: bold;
 }
 .router-link-exact-active .sidebar-item {
   background: var(--avatarActive);
