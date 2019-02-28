@@ -48,7 +48,11 @@ export default {
       .split("\\")
       .join("/");
 
-    let dumpDir = localStorage.getItem('dumpDir') || `${userDir}/CacheMonkeyDump`;
+    let dumpDir =
+      localStorage.getItem("dumpDir") || `${userDir}/CacheMonkeyDump`;
+
+    this.picsDir = localStorage.getItem("picsDir") || `${userDir}/Pictures`;
+
     let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
     if (os.platform() === "darwin") {
       discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
@@ -381,6 +385,22 @@ export default {
         this.$store.state.dumpDirectory = value;
       }
     },
+    showModel: {
+      get() {
+        return this.$store.state.showModel;
+      },
+      set(value) {
+        this.$store.state.showModel = value;
+      }
+    },
+    picsDir: {
+      get() {
+        return this.$store.state.picsDir;
+      },
+      set(value) {
+        this.$store.state.picsDir = value;
+      }
+    },
     viewingItem: {
       get() {
         return this.$store.state.viewingItem;
@@ -458,6 +478,13 @@ export default {
     // when theme changes in the store,
     getThemeName() {
       this.initGlobalStyleVariables();
+    },
+    showModel() {
+      if (this.showModel) {
+        document.body.classList.add("hidden");
+      } else {
+        document.body.classList.remove("hidden");
+      }
     }
   }
 };
@@ -472,6 +499,9 @@ body {
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background: var(--background);
   color: var(--text);
+  &.hidden {
+    overflow: hidden;
+  }
 }
 #app {
   display: flex;

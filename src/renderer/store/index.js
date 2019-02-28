@@ -20,6 +20,8 @@ export default new Vuex.Store({
     foundFiletypes: [],
     showPanel: true,
     viewingItem: false,
+    picsDir: "",
+    showModel: false,
     // task tracking
     currentTask: "Checking for updates...",
     totalAnalysing: 0,

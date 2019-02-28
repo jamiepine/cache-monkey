@@ -24,7 +24,10 @@
       <button class="coolbtn margin-vertical">Open</button>
       <br>
       <div style="opacity:0.3;">( ͡° ͜ʖ ͡°)</div>
-      <button class="coolbtn margin-vertical">Save To Pictures</button>
+      <button
+        @click="save(viewing)"
+        class="coolbtn margin-vertical"
+      >{{saved ? 'Done!' :'Save To Pictures'}}</button>
       <br>
     </div>
   </div>
@@ -50,16 +53,43 @@ moment.updateLocale("en", {
     yy: "%d years ago"
   }
 });
+import { promisify } from "util";
+const fs = require("fs");
+const copyFile = promisify(fs.copyFile);
 export default {
+  data() {
+    return {
+      saved: false
+    };
+  },
   computed: {
     viewing() {
       return this.$store.state.viewingItem;
     },
     dumpDirectory() {
       return this.$store.state.dumpDirectory;
+    },
+    picsDir: {
+      get() {
+        return this.$store.state.picsDir;
+      },
+      set(value) {
+        this.$store.state.picsDir = value;
+      }
     }
   },
   methods: {
+    async save(file) {
+      console.log(
+        this.dumpDirectory + "/" + file.dumpKey,
+        this.picsDir + "/" + file.dumpKey
+      );
+      await copyFile(
+        this.dumpDirectory + "/" + file.dumpKey,
+        this.picsDir + "/" + file.dumpKey
+      );
+      this.saved = true;
+    },
     bytesToSize(bytes) {
       const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
       if (bytes === 0) return "0 Byte";

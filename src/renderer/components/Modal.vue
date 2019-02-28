@@ -23,7 +23,6 @@ export default {
   },
   data() {
     return {
-      show: false,
       modalContent: "",
       id: " ",
       modalStack: [],
@@ -53,6 +52,14 @@ export default {
     }
   },
   computed: {
+    show: {
+      get() {
+        return this.$store.state.showModel;
+      },
+      set(value) {
+        this.$store.state.showModel = value;
+      }
+    }
     // ...mapState({
     //   unsavedChanges: state => state.unsavedChangesOnModal
     // })

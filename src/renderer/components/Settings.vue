@@ -6,7 +6,7 @@
     <h4>Dump Directory</h4>
     <small>This is the location where cache files are copied so that the originals are not modified.</small>
     <div class="flex-row">
-      <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
+      <Input :value="dumpDirectory" @update="(value) => dumpDirectory = value" :big="true"/>
       <button class="coolbtn" style="height: 37px;" @click="chooseDumpDir">Choose</button>
     </div>
     <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
@@ -28,8 +28,10 @@
     <br>
     <h4>Save To Pictures Directory</h4>
     <small>This isn't important, but this is the direcotry that the "Save to Pictures" button copies the file to. Good for efficiently nabbing memes... and stuff.</small>
-    <Input :value="dumpDirectory" @update="(value) => text = value" :big="true"/>
-    <button class="coolbtn margin-vertical" @click="chooseDumpDir">Select Dump Directory</button>
+    <div class="flex-row">
+      <Input :value="picsDir" @update="(value) => picsDir = value" :big="true"/>
+      <button class="coolbtn" style="height: 37px;" @click="choosePicturesDir">Choose</button>
+    </div>
     <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
   </div>
 </template>
@@ -76,8 +78,17 @@ export default {
       });
       if (dir.length > 0) {
         this.dumpDirectory = dir[0].split("\\").join("/");
-        localStorage.setItem('dumpDir', this.dumpDirectory)
+        localStorage.setItem("dumpDir", this.dumpDirectory);
         this.fileIndex = {};
+      }
+    },
+    choosePicturesDir() {
+      let dir = dialog.showOpenDialog({
+        properties: ["openDirectory"]
+      });
+      if (dir.length > 0) {
+        this.picsDir = dir[0].split("\\").join("/");
+        localStorage.setItem("picsDir", this.picsDir);
       }
     },
     chooseWatchDir() {
@@ -107,6 +118,14 @@ export default {
       },
       set(value) {
         this.$store.state.fileIndex = value;
+      }
+    },
+    picsDir: {
+      get() {
+        return this.$store.state.picsDir;
+      },
+      set(value) {
+        this.$store.state.picsDir = value;
       }
     },
     dumpDirectory: {
