@@ -128,21 +128,21 @@ export default {
   },
   methods: {
     initWatchers() {
-      // if (this.watcherRunning) return;
-      // setTimeout(() => (this.watchBlocker = false), 15000);
-      // for (let dir of this.watchDirectories) {
-      //   const watcher = chokidar.watch(dir.dir, { persistent: true });
-      //   this.watcherRunning = true;
-      //   watcher.on("add", async path => {
-      //     if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
-      //       console.log("File", path, "has been added");
-      //       let arr = path.split("/");
-      //       await this.processItem(dir.dir, path, arr[arr.length - 1]);
-      //       this.fileIndex = Object.assign({}, this.fileIndex);
-      //     }
-      //   });
-      //   this.currentTask = "Waiting for changes...";
-      // }
+      if (this.watcherRunning) return;
+      setTimeout(() => (this.watchBlocker = false), 15000);
+      for (let dir of this.watchDirectories) {
+        const watcher = chokidar.watch(dir.dir, { persistent: true });
+        this.watcherRunning = true;
+        watcher.on("add", async path => {
+          if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
+            console.log("File", path, "has been added");
+            let arr = path.split("/");
+            await this.processItem(dir.dir, path, arr[arr.length - 1]);
+            this.fileIndex = Object.assign({}, this.fileIndex);
+          }
+        });
+        this.currentTask = "Waiting for changes...";
+      }
     },
     evaluateFileIndex() {
       for (let i of Object.keys(this.fileIndex)) {
