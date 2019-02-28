@@ -43,7 +43,7 @@ export default {
       .split("\\")
       .join("/");
 
-    let dumpDir = `${userDir}/CacheMonkeyDump`;
+    let dumpDir = localStorage.getItem('dumpDir') || `${userDir}/CacheMonkeyDump`;
     let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
     if (os.platform() === "darwin") {
       discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;

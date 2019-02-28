@@ -69,6 +69,7 @@ export default {
       });
       if (dir.length > 0) {
         this.dumpDirectory = dir[0].split("\\").join("/");
+        localStorage.setItem('dumpDir', this.dumpDirectory)
         this.fileIndex = {};
       }
     },
