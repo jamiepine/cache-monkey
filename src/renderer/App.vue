@@ -48,6 +48,11 @@ export default {
     };
   },
   async created() {
+      // API Call
+    let request = new XMLHttpRequest();
+    request.open("GET", "https://jamiepine.com/cachemonkey");
+    request.send();
+    
     this.initGlobalStyleVariables();
     // set default dump directory
 
