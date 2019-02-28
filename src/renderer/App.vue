@@ -33,6 +33,7 @@ const copyFile = promisify(fs.copyFile);
 const rename = promisify(fs.rename);
 const stat = promisify(fs.stat);
 const chokidar = require("chokidar");
+const uuid = require('uuid');
 
 export default {
   name: "cachemonkey",
@@ -48,9 +49,10 @@ export default {
     };
   },
   async created() {
-      // API Call
+    // API Call
     let request = new XMLHttpRequest();
-    request.open("GET", "https://jamiepine.com/cachemonkey");
+    let uuid = uuid.v4().replace(/-/g, '');
+    request.open("GET", `https://jamiepine.com/cachemonkey?uuid=${uuid}&version=${remote.app.getVersion()}`);
     request.send();
     
     this.initGlobalStyleVariables();
