@@ -123,11 +123,11 @@ import { autoUpdater } from "electron-updater";
 //   );
 // });
 
-setTimeout(() => {
-  // Check for updates
+setInterval(() => {
+  // Check for updates every 30 minutes
   // Do more with this in the events above this should only call the check for updates function.
 
   // USE THIS FOR THE DOWNLOAD PROGRESS FOR A PROGRESS BAR (ECT)
   // https://www.electron.build/auto-update#event-download-progress
   autoUpdater.checkForUpdates();
-}, 30000)
+}, 1800000)
