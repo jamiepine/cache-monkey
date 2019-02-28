@@ -85,7 +85,7 @@ export default {
 }
 
 .backdrop {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100vh;
   background: #000;
@@ -105,7 +105,7 @@ export default {
   box-shadow: 0px 2px 120px 0px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   background: var(--background);
-  position: absolute;
+  position: fixed;
   z-index: 900091;
   overflow: hidden;
   opacity: 1;
