@@ -1,6 +1,6 @@
 <template>
   <div class="buttons">
-    <div class="button close">
+    <div @click="close" class="button close">
       <a class="button-text closebutton" href="#">
         <svg width="6px" height="6px" viewBox="0 0 155 155" version="1.1">
           <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -14,7 +14,7 @@
       </a>
       <!-- close button link -->
     </div>
-    <div class="button minimize">
+    <div @click="minimize" class="button minimize">
       <a class="button-text minimizebutton" href="#">
         <svg
           width="9px"
@@ -33,7 +33,7 @@
       </a>
       <!-- minimize button link -->
     </div>
-    <div class="button zoom">
+    <div @click="maximize" class="button zoom">
       <a class="button-text zoombutton" href="#">
         <img src="../assets/osx_zoom.svg">
       </a>
@@ -43,7 +43,26 @@
 </template>
 
 <script>
-export default {};
+const { shell, remote } = require("electron");
+const win = remote.getCurrentWindow();
+
+export default {
+  methods: {
+    close() {
+      win.close();
+    },
+    minimize() {
+      win.minimize();
+    },
+    maximize() {
+      if (!win.isMaximized()) {
+        win.maximize();
+      } else {
+        win.unmaximize();
+      }
+    }
+  }
+};
 </script>
 
 <style scoped lang="scss">

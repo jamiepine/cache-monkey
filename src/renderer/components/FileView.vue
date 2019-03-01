@@ -18,8 +18,7 @@
       <div>{{bytesToSize(viewing.size)}}</div>
       <br>
       <div style="opacity:0.3;">Created</div>
-      <div>{{cleanTime(viewing.created)}}</div>
-      <div>({{niceTime(viewing.created)}})</div>
+      <div>{{cleanTime(viewing.created)}} ({{niceTime(viewing.created)}})</div>
       <br>
       <div style="opacity:0.3;">Origin Location</div>
       <div>{{viewing.originLocation}}</div>
@@ -30,7 +29,14 @@
         v-tippy="$store.state.tooltipLeft"
         title="Show this file in the CacheMonkey dump directory."
         class="coolbtn margin-vertical"
-      >Open In Dump</button>
+        @click="show(viewing)"
+      >Show in Dump</button>
+      <button
+        v-tippy="$store.state.tooltipLeft"
+        title="Open file directly."
+        class="coolbtn margin-vertical"
+        @click="open(viewing)"
+      >Open File</button>
       <div style="opacity:0.3;"></div>
       <button
         v-tippy="$store.state.tooltipLeft"
@@ -79,6 +85,7 @@ moment.updateLocale("en", {
 import { promisify } from "util";
 const fs = require("fs");
 const copyFile = promisify(fs.copyFile);
+const { shell } = require("electron");
 export default {
   data() {
     return {
@@ -112,7 +119,15 @@ export default {
   },
   methods: {
     cleanTime(time) {
-      return moment(time).toLocaleString();
+      return moment(time)
+        .format("LL")
+        .toLocaleString();
+    },
+    open(file) {
+      shell.openItem(this.dumpDirectory + "/" + file.dumpKey);
+    },
+    show(file) {
+      shell.showItemInFolder(this.dumpDirectory + "/" + file.dumpKey);
     },
     async save(file) {
       console.log(
