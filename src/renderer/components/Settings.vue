@@ -34,7 +34,7 @@
         <button style="    margin-left: 4px;" class="coolbtn" @click="openDirectory(i.dir)">
           <icon :icon="['fa','folder-open']"/>
         </button>
-        <button style="    margin-left: 4px;" class="coolbtn" @click="rmDir(i.dir)">
+        <button style="    margin-left: 4px;" class="coolbtn" @click="rmDir(i)">
           <icon :icon="['fa','trash']"/>
         </button>
       </div>
@@ -108,8 +108,12 @@ export default {
       this.watchDirectories = Object.keys(obj).map(item => obj[item]);
       return this.watchDirectories;
     },
-    rmDir(index) {
-      this.watchDirectories.splice(index, 1);
+    rmDir(directory) {
+      // this.watchDirectories.splice(index, 1);
+
+      this.watchDirectories = this.watchDirectories.filter(
+        dir => directory.dir !== dir.dir
+      );
     },
     chooseDumpDir() {
       let dir = dialog.showOpenDialog({
@@ -145,6 +149,7 @@ export default {
           name: "discord",
           dir: directory
         });
+        this.watchDirectories = this.watchDirectories;
       } else {
         this.$root.$emit(
           "alert",
@@ -168,6 +173,7 @@ export default {
           name: "discordcanary",
           dir: directory
         });
+        this.watchDirectories = this.watchDirectories;
       } else {
         this.$root.$emit(
           "alert",
@@ -193,6 +199,7 @@ export default {
           name: "chrome",
           dir: directory
         });
+        this.watchDirectories = this.watchDirectories;
       } else {
         this.$root.$emit(
           "alert",
@@ -216,6 +223,7 @@ export default {
           name: name,
           dir: cleanDir
         });
+        this.watchDirectories = this.watchDirectories;
       }
     },
     openDirectory(item) {
@@ -253,7 +261,8 @@ export default {
         return this.$store.state.watchDirectories;
       },
       set(value) {
-        localStorage.setItem("watchDirectories", value);
+        console.log("hi?");
+        localStorage.setItem("watchDirectories", JSON.stringify(value));
         this.$store.state.watchDirectories = value;
       }
     },

@@ -78,10 +78,6 @@ export default {
 
     this.picsDir = localStorage.getItem("picsDir") || `${userDir}/Pictures`;
 
-    // let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
-    // if (os.platform() === "darwin") {
-    //   discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
-    // }
     let ready = true;
     // console.log(discordCacheDir);
 
@@ -104,17 +100,29 @@ export default {
       });
     }
 
-    // const discordCacheExists = await fs.existsSync(discordCacheDir);
+    let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
+    if (os.platform() === "darwin") {
+      discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
+    }
+    const discordCacheExists = await fs.existsSync(discordCacheDir);
 
-    // if (discordCacheExists) {
-    //   this.watchDirectories.push({
-    //     name: "discord",
-    //     dir: discordCacheDir
-    //   });
-    // } else {
-    //   this.currentTask = "Could not find Discord cache, please add manually.";
-    //   ready = false;
-    // }
+    if (localStorage.getItem("watchDirectories")) {
+      this.watchDirectories = JSON.parse(
+        localStorage.getItem("watchDirectories")
+      );
+    } else if (discordCacheExists) {
+      this.watchDirectories.push({
+        name: "discord",
+        dir: discordCacheDir
+      });
+      localStorage.setItem(
+        "watchDirectories",
+        JSON.stringify(this.watchDirectories)
+      );
+    } else {
+      this.currentTask = "Could not find Discord cache, please add manually.";
+      ready = false;
+    }
 
     if (ready) {
       if (localStorage.getItem("fileIndex")) {
