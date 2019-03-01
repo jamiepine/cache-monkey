@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog } from "electron"; // eslint-disable-line
-
+import { autoUpdater } from "electron-updater";
+import Vue from "vue";
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -39,7 +40,10 @@ function createWindow() {
   });
 }
 
-app.on("ready", createWindow);
+app.on("ready", () => {
+  createWindow();
+  autoUpdater.checkForUpdates();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -53,6 +57,20 @@ app.on("activate", () => {
   }
 });
 
+app.updateDownloaded = false;
+
+app.reloadApp = () => {
+  autoUpdater.quitAndInstall();
+};
+
+autoUpdater.on("update-available", info => {
+  autoUpdater.downloadUpdate();
+});
+
+autoUpdater.on("update-downloaded", info => {
+  app.updateDownloaded = info.version;
+});
+
 // app.getPath('temp')
 
 /**
@@ -63,9 +81,17 @@ app.on("activate", () => {
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-builder.html#auto-updating
  import { autoUpdater } from 'electron-updater'
  */
-import log from "electron-log";
-import { autoUpdater } from "electron-updater";
+
 // autoUpdater.checkForUpdatesAndNotify();
+
+// app.on("ready", () => {
+
+//   autoUpdater.checkForUpdates();
+// });
+
+// autoUpdater.on("update-available", info => {});
+
+// autoUpdater.on("update-downloaded", info => {});
 
 // autoUpdater.on("checking-for-update", () => {
 //   dialog.showMessageBox({
@@ -76,29 +102,27 @@ import { autoUpdater } from "electron-updater";
 //     }`
 //   });
 // });
-
+// autoUpdater.on("update-available", info => {
+//   dialog.showMessageBox(
+//       {
+//           type: "info",
+//           title: "Update Available",
+//           message: `New update available, would you like to update now?\n\nVersion: ${
+//               info.version
+//             }`,
+//             buttons: ["Yes", "No"]
+//           },
+//           buttonIndex => {
+//               if (buttonIndex == 0) {
+//         autoUpdater.downloadUpdate();
+//       }
+//     }
+//   );
+// });
 // autoUpdater.on("error", error => {
 //   dialog.showErrorBox(
 //     "Error: ",
 //     error == null ? "unknown" : (error.stack || error).toString()
-//   );
-// });
-
-// autoUpdater.on("update-available", info => {
-//   dialog.showMessageBox(
-//     {
-//       type: "info",
-//       title: "Update Available",
-//       message: `New update available, would you like to update now?\n\nVersion: ${
-//         info.version
-//       }`,
-//       buttons: ["Yes", "No"]
-//     },
-//     buttonIndex => {
-//       if (buttonIndex == 0) {
-//         autoUpdater.downloadUpdate();
-//       }
-//     }
 //   );
 // });
 
@@ -130,4 +154,4 @@ setInterval(() => {
   // USE THIS FOR THE DOWNLOAD PROGRESS FOR A PROGRESS BAR (ECT)
   // https://www.electron.build/auto-update#event-download-progress
   autoUpdater.checkForUpdates();
-}, 1800000)
+}, 1800000);

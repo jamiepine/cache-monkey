@@ -11,6 +11,7 @@ export default new Vuex.Store({
   strict: false,
   modules,
   state: {
+    updateReady: false,
     processing: false,
     fileIndex: {},
     scan: [],

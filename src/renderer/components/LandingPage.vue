@@ -2,18 +2,23 @@
   <div id="wrapper">
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
+      <div @click="reload" v-if="updateReady" class="update-box">New update downloaded!
+        <br>
+        <small>Click here to reload.</small>
+      </div>
+
+      <!-- <h1 style="text-align:center">{{monkey}}</h1> -->
+      <div style="text-align: center;width:100%;margin-bottom:10px;">
+        <img v-if="monkey === 1" width="70px" src="../assets/monkey.svg">
+        <img v-else-if="monkey === 2" width="70px" src="../assets/monkey_cover_ears.svg">
+        <img v-else-if="monkey === 3" width="70px" src="../assets/monkey_cover_mouth.svg">
+        <img v-else-if="monkey === 4" width="70px" src="../assets/monkey_cover_eyes.svg">
+      </div>
       <a
         style="text-align: center;"
         href="#"
         @click.prevent="open('https://twitter.com/jamiepine')"
       >
-        <!-- <h1 style="text-align:center">{{monkey}}</h1> -->
-        <div style="width:100%;margin-bottom:10px;">
-          <img v-if="monkey === 1" width="70px" src="../assets/monkey.svg">
-          <img v-else-if="monkey === 2" width="70px" src="../assets/monkey_cover_ears.svg">
-          <img v-else-if="monkey === 3" width="70px" src="../assets/monkey_cover_mouth.svg">
-          <img v-else-if="monkey === 4" width="70px" src="../assets/monkey_cover_eyes.svg">
-        </div>
         <h1 class="main-title logo">CacheMonkey</h1>
         <small style="opacity: 0.2;">
           by
@@ -21,6 +26,7 @@
         </small>
       </a>
       <br>
+
       <div class="info-bar">
         <Input
           class="transparent_input"
@@ -113,7 +119,8 @@
 import drivelist from "drivelist";
 import { promisify } from "util";
 const { shell } = require("electron");
-const { dialog } = require("electron").remote;
+const remote = require("electron").remote;
+const dialog = remote.dialog;
 const Path = require("path");
 const fs = require("fs");
 const readChunk = require("read-chunk");
@@ -139,8 +146,18 @@ export default {
       currentFilter: false
     };
   },
-  watch: {},
+  mounted() {
+    const interval = setInterval(() => {
+      if (remote.app.updateDownloaded) {
+        this.updateReady = remote.app.updateDownloaded;
+        clearInterval(interval);
+      }
+    }, 30000);
+  },
   methods: {
+    reload() {
+      remote.app.reloadApp();
+    },
     click(item) {
       this.viewing = item;
       this.$root.$emit("modal", "FileView");
@@ -201,6 +218,14 @@ export default {
       },
       set(value) {
         this.$store.state.processing = value;
+      }
+    },
+    updateReady: {
+      get() {
+        return this.$store.state.updateReady;
+      },
+      set(value) {
+        this.$store.state.updateReady = value;
       }
     },
     fileIndex: {
@@ -324,6 +349,20 @@ body {
   font-weight: bold;
   position: absolute;
   margin: 4px;
+}
+.update-box {
+  font-size: 13px;
+  border-radius: 5px;
+  padding: 10px;
+  background: #43b153;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 100ms;
+  &:hover {
+    background: #318a3e;
+  }
 }
 .blob2 {
   display: none;
