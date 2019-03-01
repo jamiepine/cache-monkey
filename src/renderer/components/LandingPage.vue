@@ -54,6 +54,7 @@
       <div class="flex">
         <div
           class="coolbtn margin-right"
+          style="    max-width: 260px;"
           v-for="(i, index) of foundFiletypes"
           :key="index"
           :class="{'filtered': currentFilter === i}"
@@ -95,10 +96,7 @@
         @click="$parent.purgeBoth"
       >Purge Cache & Dump</button>
       <br>
-      <div>
-        <span style="opacity:0.3;">Content Loaded:</span>
-        <b>{{content.length}}</b>
-      </div>
+      <div></div>
     </div>
     <div class="content">
       <div
@@ -118,6 +116,9 @@
     <!-- <div class="image" :style="{ 'background-image': `url(${test})` }"></div>
     {{test}}-->
     <br>
+    <div class="mainblob blob">
+      <b>{{content.length}}</b> Items
+    </div>
   </div>
 </template>
 
@@ -424,6 +425,12 @@ body {
   height: 100vh;
   border-radius: 15px 0 0 0;
   margin-top: 25px;
+}
+.mainblob {
+  right: 10px;
+  bottom: 10px;
+  font-size: 12px;
+  position: fixed;
 }
 .content {
   margin-left: 360px;
