@@ -3,8 +3,8 @@
     <Alerts/>
     <Sidebar/>
     <div class="topbar">
-      <WindowsButtons v-if="isWindows"/>
-      <TrafficLights v-else/>
+      <TrafficLights v-if="isMac()"/>
+      <WindowsButtons v-else/>
     </div>
     <div id="app">
       <Panel/>
@@ -400,12 +400,12 @@ export default {
 
       // append to body
       document.body.appendChild(style);
+    },
+    isMac() {
+      return !!os.platform() === "darwin";
     }
   },
   computed: {
-    isWindows() {
-      return !!os.platform() === "win32";
-    },
     ...mapGetters(["getTheme", "getThemeName"]),
     processing: {
       get() {

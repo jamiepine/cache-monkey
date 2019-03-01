@@ -171,6 +171,8 @@ export default {
   },
   methods: {
     reload() {
+      this.fileIndex = {};
+      localStorage.clear();
       remote.app.reloadApp();
     },
     click(item) {
