@@ -2,7 +2,11 @@
   <div id="wrapper">
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
-      <div @click="reload" v-if="updateReady" class="update-box">New update downloaded!
+      <div v-if="updateDownloading && !updateReady" class="update-box grey">New update available!
+        <br>
+        <small>Updating in background...</small>
+      </div>
+      <div @click="reload" v-else-if="updateReady" class="update-box">New update downloaded!
         <br>
         <small>Click here to reload.</small>
       </div>
@@ -91,8 +95,10 @@
         @click="$parent.purgeBoth"
       >Purge Cache & Dump</button>
       <br>
-      <div style="opacity:0.3;">Content Loaded:</div>
-      <b>{{content.length}}</b>
+      <div>
+        <span style="opacity:0.3;">Content Loaded:</span>
+        <b>{{content.length}}</b>
+      </div>
     </div>
     <div class="content">
       <div
@@ -143,11 +149,19 @@ export default {
   data() {
     return {
       monkey: 1,
-      currentFilter: false
+      currentFilter: false,
+      updateDownloading: false
     };
   },
   mounted() {
+    setTimeout(
+      () => (this.updateDownloading = remote.app.updateDownloading),
+      2000
+    );
     const interval = setInterval(() => {
+      if (remote.app.updateDownloading) {
+        this.updateDownloading = remote.app.updateDownloading;
+      }
       if (remote.app.updateDownloaded) {
         this.updateReady = remote.app.updateDownloaded;
         clearInterval(interval);
@@ -328,7 +342,7 @@ body {
   width: 100px;
   height: 100px;
   margin: 1px;
-  background: #303030;
+  background: var(--background);
   float: left;
   background-size: cover;
   cursor: pointer;
@@ -349,6 +363,7 @@ body {
   font-weight: bold;
   position: absolute;
   margin: 4px;
+  color: #fff;
 }
 .update-box {
   font-size: 13px;
@@ -362,6 +377,9 @@ body {
   transition: 100ms;
   &:hover {
     background: #318a3e;
+  }
+  &.grey {
+    background: var(--boxLight);
   }
 }
 .blob2 {
@@ -402,7 +420,7 @@ body {
   display: flex;
   margin-left: 70px;
   flex-direction: column;
-  background: var(--background2);
+  background: var(--main);
   height: 100vh;
   border-radius: 15px 0 0 0;
   margin-top: 25px;

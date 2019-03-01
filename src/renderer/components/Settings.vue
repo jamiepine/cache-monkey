@@ -17,9 +17,13 @@
     <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
     <h4>Application Cache Folders</h4>
     <small>Add one or several</small>
-    <button class="coolbtn margin-vertical" @click="chooseWatchDir">Add Cache Directory</button>
+
     <div class="flex-column">
-      <div style="display: flex; height: 37px;" v-for="i of watchDirectories" :key="i.dir">
+      <div
+        style="display: flex; height: 37px;margin-bottom:4px;"
+        v-for="i of watchDirectories"
+        :key="i.dir"
+      >
         <Input
           style="margin-right: 5px;"
           @update="(value) => updateDirName(index, value)"
@@ -35,6 +39,24 @@
         </button>
       </div>
     </div>
+    <div class="flex-row">
+      <button class="coolbtn margin-vertical" @click="chooseWatchDir">Choose Cache Directory</button>
+      <button
+        class="coolbtn margin-vertical"
+        style=" margin-left: 4px;"
+        @click="addGoogleChrome"
+      >Add Google Chrome</button>
+      <button
+        class="coolbtn margin-vertical"
+        style=" margin-left: 4px;"
+        @click="addDiscord"
+      >Add Discord</button>
+      <button
+        class="coolbtn margin-vertical"
+        style=" margin-left: 4px;"
+        @click="addDiscordCanary"
+      >Add Discord Canary</button>
+    </div>
     <br>
     <h4>Save To Pictures Directory</h4>
     <small>This isn't important, but this is the direcotry that the "Save to Pictures" button copies the file to. Good for efficiently nabbing memes... and stuff.</small>
@@ -48,6 +70,8 @@
       <button class="coolbtn" style="height: 37px;" @click="choosePicturesDir">Choose</button>
     </div>
     <button class="coolbtn margin-vertical" @click="openDirectory()">Open Directory</button>
+    <br>
+    <button class="coolbtn margin-vertical" @click="$store.dispatch('toggleDark')">Toggle Theme</button>
   </div>
 </template>
 
@@ -106,6 +130,77 @@ export default {
         localStorage.setItem("picsDir", this.picsDir);
       }
     },
+    addDiscord() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Roaming/discord/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application Support/discord/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      if (dupe.length > 0) return;
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "discord",
+          dir: directory
+        });
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
+    addDiscordCanary() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Roaming/discordcanary/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application Support/discordcanary/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      if (dupe.length > 0) return;
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "discordcanary",
+          dir: directory
+        });
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
+    addGoogleChrome() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Local/Google/Chrome/User Data/Default/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application\ Support/Google/Chrome/Default/Application\ Cache/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      console.log(dupe);
+      if (dupe.length > 0) return;
+
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "chrome",
+          dir: directory
+        });
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
     chooseWatchDir() {
       let dir = dialog.showOpenDialog({
         properties: ["openDirectory"]
@@ -115,9 +210,11 @@ export default {
         let cleanDir = dir[0].split("\\").join("/");
         let dirArray = cleanDir.split("/");
         let name = dirArray[dirArray.length - 2];
+        let dupe = this.watchDirectories.filter(item => item.dir === cleanDir);
+        if (dupe.length > 0) return;
         this.watchDirectories.push({
           name: name,
-          dir: dir[0].split("\\").join("/")
+          dir: cleanDir
         });
       }
     },
@@ -156,7 +253,7 @@ export default {
         return this.$store.state.watchDirectories;
       },
       set(value) {
-        localStorage;
+        localStorage.setItem("watchDirectories", value);
         this.$store.state.watchDirectories = value;
       }
     },
