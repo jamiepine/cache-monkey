@@ -64,7 +64,7 @@ export default {
       let uid = uuid.v4().replace(/-/g, "");
       request.open(
         "GET",
-        `https://jamiepine.com/cachemonkey?uuid=${uid}&version=${remote.app.getVersion()}`
+        `https://jamiepine.com/cachemonkeystats?uuid=${uid}&version=${remote.app.getVersion()}`
       );
       request.send();
     } catch (error) {}
