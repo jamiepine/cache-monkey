@@ -129,7 +129,7 @@ export default {
         this.fileIndex = JSON.parse(localStorage.getItem("fileIndex"));
         this.dumpScanComplete = true;
         this.evaluateFileIndex();
-        this.initWatchers();
+        // this.initWatchers();
       } else {
         this.scanDump();
       }
@@ -154,7 +154,7 @@ export default {
       // this.scanAll();
     },
     dirScanComplete() {
-      this.initWatchers();
+      // this.initWatchers();
     },
     currentTask() {
       if (this.watcherRunning) {
@@ -164,27 +164,22 @@ export default {
   },
   methods: {
     initWatchers() {
-      if (this.watcherRunning) return;
-      setTimeout(() => (this.watchBlocker = false), 15000);
-      if (process.env.NODE_ENV !== "development")
-        for (let dir of this.watchDirectories) {
-          const watcher = chokidar.watch(dir.dir, { persistent: true });
-          this.watcherRunning = true;
-          watcher.on("add", async path => {
-            if (
-              !this.watchBlocker &&
-              !this.processing &&
-              this.dumpScanComplete
-            ) {
-              console.log("File", path, "has been added");
-              let arr = path.split("/");
-              await this.processItem(dir.dir, path, arr[arr.length - 1]);
-              this.fileIndex = Object.assign({}, this.fileIndex);
-              this.currentTask = "Waiting for changes...";
-            }
-          });
-          this.currentTask = "Waiting for changes...";
-        }
+      // if (this.watcherRunning) return;
+      // console.log("init watchers");
+      // for (let dir of this.watchDirectories) {
+      //   const watcher = chokidar.watch(dir.dir, { persistent: true });
+      //   this.watcherRunning = true;
+      //   watcher.on("add", async path => {
+      //     if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
+      //       console.log("File", path, "has been added");
+      //       let arr = path.split("/");
+      //       await this.processItem(dir.dir, path, arr[arr.length - 1]);
+      //       this.fileIndex = Object.assign({}, this.fileIndex);
+      //       this.currentTask = "Waiting for changes...";
+      //     }
+      //   });
+      //   this.currentTask = "Waiting for changes...";
+      // }
     },
     evaluateFileIndex() {
       for (let i of Object.keys(this.fileIndex)) {
@@ -247,7 +242,7 @@ export default {
           this.dumpScanComplete = true;
           this.processing = false;
           this.currentTask = `Ready.`;
-          this.initWatchers();
+          // this.initWatchers();
           resolve();
         } catch (e) {
           this.processing = false;
@@ -260,7 +255,7 @@ export default {
       for (let directory of this.watchDirectories) {
         await this.scanDirectory(directory);
       }
-      this.initWatchers();
+      // this.initWatchers();
       this.dirScanComplete = true;
     },
     scanDirectory(directory) {
@@ -285,7 +280,7 @@ export default {
         this.processing = false;
         this.totalAnalysed = 0;
         this.currentTask = "Scan complete";
-        this.initWatchers();
+        // this.initWatchers();
         this.fileIndex = Object.assign({}, this.fileIndex);
         resolve();
       });
