@@ -397,7 +397,7 @@ export default {
       document.body.appendChild(style);
     },
     isMac() {
-      return !!os.platform() === "darwin";
+      return os.platform() === "darwin";
     }
   },
   computed: {
