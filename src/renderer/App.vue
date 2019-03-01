@@ -2,7 +2,8 @@
   <div>
     <Sidebar/>
     <div class="topbar">
-      <TrafficLights/>
+      <WindowsButtons v-if="isWindows"/>
+      <TrafficLights v-else/>
     </div>
     <div id="app">
       <Panel/>
@@ -15,6 +16,7 @@
 <script>
 import Panel from "./components/SlidePanel";
 import TrafficLights from "./components/TrafficLights";
+import WindowsButtons from "./components/WindowsButtons";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters, mapState } from "vuex";
 import drivelist from "drivelist";
@@ -41,7 +43,8 @@ export default {
     Sidebar,
     Panel,
     Modal,
-    TrafficLights
+    TrafficLights,
+    WindowsButtons
   },
   data() {
     return {
@@ -374,6 +377,9 @@ export default {
     }
   },
   computed: {
+    isWindows() {
+      return !!os.platform() === "win32";
+    },
     ...mapGetters(["getTheme", "getThemeName"]),
     processing: {
       get() {
@@ -533,6 +539,7 @@ body {
   background: var(--sidebar);
   position: fixed;
   z-index: 999;
+  display: flex;
 }
 #app {
   display: flex;
