@@ -59,17 +59,18 @@ app.on("activate", () => {
 
 app.updateDownloaded = false;
 
-app.reloadApp = () => {
-  autoUpdater.quitAndInstall();
-};
-
 autoUpdater.on("update-available", info => {
+  app.updateDownloading = true;
   autoUpdater.downloadUpdate();
 });
 
 autoUpdater.on("update-downloaded", info => {
-  app.updateDownloaded = info.version;
+  app.updateDownloaded = true;
 });
+
+app.reloadApp = () => {
+  autoUpdater.quitAndInstall();
+};
 
 // app.getPath('temp')
 

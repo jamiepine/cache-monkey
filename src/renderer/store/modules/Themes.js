@@ -3,8 +3,9 @@ const state = {
   // define styles here
   themes: {
     light: {
+      sidebar: "#efefef",
       background: "#f1f1f1",
-      background2: "#1a1a1a",
+      main: "#f1f1f1",
       box: "#e6e6e6",
       boxLight: "#e6e6e6",
       boxHover: "#ececec",
@@ -16,13 +17,12 @@ const state = {
       searchBorder: "rgba(216, 216, 216, 0)",
       headings: "#181818",
       faintText: "#535353",
-      windowsBar: "#c6c6c6",
-      sidebar: "#efefef"
+      windowsBar: "#c6c6c6"
     },
     dark: {
       sidebar: "#202020",
       background: "#181818",
-      background2: "#1a1a1a",
+      main: "#1a1a1a",
       box: "#202020",
       boxLight: "#292929",
       boxHover: "#242424",

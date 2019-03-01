@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Alerts/>
     <Sidebar/>
     <div class="topbar">
       <TrafficLights v-if="isMac()"/>
@@ -17,6 +18,7 @@
 import Panel from "./components/SlidePanel";
 import TrafficLights from "./components/TrafficLights";
 import WindowsButtons from "./components/WindowsButtons";
+import Alerts from "./components/Alerts";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters, mapState } from "vuex";
 import drivelist from "drivelist";
@@ -44,7 +46,8 @@ export default {
     Panel,
     Modal,
     TrafficLights,
-    WindowsButtons
+    WindowsButtons,
+    Alerts
   },
   data() {
     return {
@@ -75,12 +78,8 @@ export default {
 
     this.picsDir = localStorage.getItem("picsDir") || `${userDir}/Pictures`;
 
-    let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
-    if (os.platform() === "darwin") {
-      discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
-    }
     let ready = true;
-    console.log(discordCacheDir);
+    // console.log(discordCacheDir);
 
     const dumpExists = await fs.existsSync(dumpDir);
 
@@ -101,13 +100,25 @@ export default {
       });
     }
 
+    let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
+    if (os.platform() === "darwin") {
+      discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
+    }
     const discordCacheExists = await fs.existsSync(discordCacheDir);
 
-    if (discordCacheExists) {
+    if (localStorage.getItem("watchDirectories")) {
+      this.watchDirectories = JSON.parse(
+        localStorage.getItem("watchDirectories")
+      );
+    } else if (discordCacheExists) {
       this.watchDirectories.push({
         name: "discord",
         dir: discordCacheDir
       });
+      localStorage.setItem(
+        "watchDirectories",
+        JSON.stringify(this.watchDirectories)
+      );
     } else {
       this.currentTask = "Could not find Discord cache, please add manually.";
       ready = false;
@@ -125,6 +136,16 @@ export default {
     }
   },
   watch: {
+    // watchDirectories() {
+    //   let check = []
+    //   for (let directory of this.watchDirectories) {
+    //     if (check.includes(this.watchDirectories[directory].dir)) {
+    //       this.watchDirectories.splice(directory)
+    //     } else {
+    //       check.push(this.watchDirectories[directory].dir)
+    //     }
+    //   }
+    // },
     dumpDirectory() {
       // if changed, mark scan as incomplete
       this.dumpScanComplete = false;
@@ -145,20 +166,25 @@ export default {
     initWatchers() {
       if (this.watcherRunning) return;
       setTimeout(() => (this.watchBlocker = false), 15000);
-      for (let dir of this.watchDirectories) {
-        const watcher = chokidar.watch(dir.dir, { persistent: true });
-        this.watcherRunning = true;
-        watcher.on("add", async path => {
-          if (!this.watchBlocker && !this.processing && this.dumpScanComplete) {
-            console.log("File", path, "has been added");
-            let arr = path.split("/");
-            await this.processItem(dir.dir, path, arr[arr.length - 1]);
-            this.fileIndex = Object.assign({}, this.fileIndex);
-            this.currentTask = "Waiting for changes...";
-          }
-        });
-        this.currentTask = "Waiting for changes...";
-      }
+      if (process.env.NODE_ENV !== "development")
+        for (let dir of this.watchDirectories) {
+          const watcher = chokidar.watch(dir.dir, { persistent: true });
+          this.watcherRunning = true;
+          watcher.on("add", async path => {
+            if (
+              !this.watchBlocker &&
+              !this.processing &&
+              this.dumpScanComplete
+            ) {
+              console.log("File", path, "has been added");
+              let arr = path.split("/");
+              await this.processItem(dir.dir, path, arr[arr.length - 1]);
+              this.fileIndex = Object.assign({}, this.fileIndex);
+              this.currentTask = "Waiting for changes...";
+            }
+          });
+          this.currentTask = "Waiting for changes...";
+        }
     },
     evaluateFileIndex() {
       for (let i of Object.keys(this.fileIndex)) {
@@ -269,7 +295,7 @@ export default {
         const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
         const _type = fileType(buffer);
 
-        let extention = _type.mime.split("/")[1];
+        let extention = _type && _type.mime ? _type.mime.split("/")[1] : null;
         if (extention && !this.foundFiletypes.includes(extention))
           this.foundFiletypes.push(extention);
 
@@ -559,7 +585,7 @@ body {
   margin-top: 25px;
   display: flex;
   flex-direction: column;
-  background: var(--background2);
+  background: var(--main);
   border-radius: 15px 0 0 0;
   min-height: calc(100vh - 29px);
 }

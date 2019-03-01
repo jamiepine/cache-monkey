@@ -33,7 +33,6 @@
         href="#"
         @click.prevent="open('https://twtter.com/TheTetrabyte')"
       >Tetrabyte</a> for working with me to get this app released so quickly.
-      >
     </p>
     <h4>👀 Watch me build it!</h4>
     <p>
