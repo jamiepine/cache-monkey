@@ -55,6 +55,7 @@ export default {
   display: flex;
   flex-direction: row;
   /* width: 73px; */
+  -webkit-app-region: no-drag;
   min-width: 73px;
   justify-content: center;
   position: absolute;
@@ -63,7 +64,7 @@ export default {
   z-index: 100px;
 }
 .button {
-  padding: 6px 10px;
+  padding: 2px 10px;
   cursor: pointer;
   /* width: 33%; */
   &:hover {
