@@ -1,7 +1,7 @@
 
 
 <template>
-  <div class="buttons">
+  <div :class="{'dark-buttons': $store.getters.getThemeName === 'light'}" class="buttons">
     <div @click="minimize" class="button minimize">
       <svg name="TitleBarMinimize" width="12" height="12" viewBox="0 0 12 12">
         <rect fill="#ffffff" width="10" height="1" x="1" y="6"></rect>
@@ -63,12 +63,24 @@ export default {
   cursor: pointer;
   z-index: 100px;
 }
+.dark-buttons .button {
+  &:hover {
+    background: rgb(192, 192, 192);
+  }
+  &.close:hover {
+    background: #e41414dc;
+  }
+
+  svg {
+    filter: invert(100%);
+  }
+}
 .button {
-  padding: 2px 10px;
+  padding: 4px 12px;
   cursor: pointer;
   /* width: 33%; */
   &:hover {
-    background: #00000027;
+    background: var(--boxLight);
   }
   &.close:hover {
     background: #e41414dc;

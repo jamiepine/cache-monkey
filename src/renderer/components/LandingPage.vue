@@ -57,10 +57,10 @@
       <br>
 
       <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">Filetypes Discovered</div>
-      <div class="flex">
+      <div style="width:230px;" class="flex">
         <div
           class="coolbtn margin-right"
-          style="    max-width: 260px;"
+          style="padding: 10px; max-width: 260px;margin-bottom:7px;"
           v-for="(i, index) of foundFiletypes"
           :key="index"
           :class="{'filtered': currentFilter === i}"
