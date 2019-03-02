@@ -66,6 +66,7 @@ autoUpdater.on("update-available", info => {
 
 autoUpdater.on("update-downloaded", info => {
   app.updateDownloaded = true;
+  autoUpdater.quitAndInstall();
 });
 
 app.reloadApp = () => {
