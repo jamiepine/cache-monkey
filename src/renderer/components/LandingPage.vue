@@ -110,7 +110,7 @@
         :key="index"
         class="image"
         @click="click(i)"
-        :style="{ 'background-image': `url(file://${dumpDirectory}/${i.dumpKey})` }"
+        :style="{ 'background-image': `url(file://${dumpDirectory.replace(/[ ]/g, '\ ')}/${i.dumpKey.replace(/[ ]/g, '\ ')})` }"
       >
         <div class="hover-info">
           <div class="blob" v-if="i.type">{{i.type}}</div>
