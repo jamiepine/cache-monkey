@@ -109,8 +109,8 @@
         v-for="(i, index) of content"
         :key="index"
         class="image"
-        @click="click(i)"
-        :style="{ 'background-image': `url(file://${dumpDirectory}/${i.dumpKey})` }"
+        @click="click(i, `file://${dumpDirectory}/${i.dumpKey}`);"
+        :style="{ 'background-image': `url(file://${dumpDirectory.replace(/[ ]/g, '\ ')}/${i.dumpKey.replace(/[ ]/g, '\ ')})` }"
       >
         <div class="hover-info">
           <div class="blob" v-if="i.type">{{i.type}}</div>
@@ -189,7 +189,8 @@ export default {
       localStorage.clear();
       remote.app.reloadApp();
     },
-    click(item) {
+    click(item, fileDir) {
+      console.log(item, fileDir);
       this.viewing = item;
       this.$root.$emit("modal", "FileView");
     },
