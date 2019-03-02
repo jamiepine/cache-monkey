@@ -3,14 +3,14 @@
     <div class="image-view" v-if="viewing.type == 'mp4'">
       <div class="video-big">
         <video class="player" height="100px" playsinline loop controls>
-          <source :src="`${dumpDirectory}/${viewing.dumpKey}`" type="video/mp4">
+          <source :src='`${dumpDirectory.replace(/[ ]/g, "\\ ")}/${viewing.dumpKey.replace(/[ ]/g, "\ ")}`' type="video/mp4">
         </video>
       </div>
     </div>
     <div class="image-view" v-else>
       <div
         class="image-big"
-        :style="{ 'background-image': `url(file://${dumpDirectory}/${viewing.dumpKey})` }"
+        :style='{ "background-image": `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${viewing.dumpKey.replace(/[ ]/g, "\ ")}")` }'
       />
     </div>
     <div class="info-area">

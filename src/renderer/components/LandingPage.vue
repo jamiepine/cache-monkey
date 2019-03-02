@@ -109,8 +109,8 @@
         v-for="(i, index) of content"
         :key="index"
         class="image"
-        @click="click(i, `file://${dumpDirectory}/${i.dumpKey}`);"
-        :style="{ 'background-image': `url(file://${dumpDirectory.replace(/[ ]/g, '\ ')}/${i.dumpKey.replace(/[ ]/g, '\ ')})` }"
+        @click='click(i, `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")`);'
+        :style='{ "background-image": `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")` }'
       >
         <div class="hover-info">
           <div class="blob" v-if="i.type">{{i.type}}</div>
