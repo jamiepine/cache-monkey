@@ -14,8 +14,11 @@
         <a
           href="#"
           @click.prevent="open('https://twitter.com/jamiepine')"
-        >@jamiepine</a> on Twitter. Or ofcourse if you want to
-        <a href="#" @click.prevent="open('https://streamlabs.com/jamiepine')">donate</a> you can, it helps me make more apps like this.
+        >@jamiepine</a> on Twitter. If you want to
+        <a
+          href="#"
+          @click.prevent="open('https://streamlabs.com/jamiepine')"
+        >donate</a> you can, it helps me make more apps like this.
       </p>
     </div>
     <!-- <icon :icon="['fab', 'twitter']"/> -->

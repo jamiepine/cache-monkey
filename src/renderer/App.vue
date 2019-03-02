@@ -157,9 +157,9 @@ export default {
       // this.initWatchers();
     },
     currentTask() {
-      if (this.watcherRunning) {
-        setTimeout(() => (this.currentTask = "Waiting for changes..."), 12000);
-      }
+      // if (this.watcherRunning) {
+      //   setTimeout(() => (this.currentTask = "Waiting for changes..."), 12000);
+      // }
     }
   },
   methods: {

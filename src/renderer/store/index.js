@@ -24,7 +24,7 @@ export default new Vuex.Store({
     picsDir: "",
     showModel: false,
     // task tracking
-    currentTask: "Checking for updates...",
+    currentTask: "Ready.",
     totalAnalysing: 0,
     totalAnalysed: 0,
     dumpScanComplete: false,
