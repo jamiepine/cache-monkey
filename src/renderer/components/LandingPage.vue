@@ -48,13 +48,19 @@
       <!-- <button @click="$store.dispatch('toggleDark')">Toggle theme</button> -->
       <button v-if="!processing" class="coolbtn margin-vertical" @click="$parent.scanAll">Scan Cache</button>
       <button v-else class="coolbtn margin-vertical" @click="processing = false">Abort Tasks</button>
+      <!-- <button
+        v-if="!$parent.watcherRunning"
+        class="coolbtn margin-vertical"
+        @click="initWatch "
+      >Watch For Updates</button>
+      <button v-else class="coolbtn margin-vertical" @click="killWatch">Kill Watcher</button>-->
       <br>
 
       <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">Filetypes Discovered</div>
-      <div class="flex">
+      <div style="width:230px;" class="flex">
         <div
           class="coolbtn margin-right"
-          style="    max-width: 260px;"
+          style="padding: 10px; max-width: 260px;margin-bottom:7px;"
           v-for="(i, index) of foundFiletypes"
           :key="index"
           :class="{'filtered': currentFilter === i}"
@@ -170,7 +176,17 @@ export default {
     }, 30000);
   },
   methods: {
+    initWatch() {
+      this.$parent.watchBlocker = false;
+      this.$parent.initWatchers();
+    },
+    killWatch() {
+      this.$parent.watchBlocker = true;
+      this.$parent.watcherRunning = false;
+    },
     reload() {
+      this.fileIndex = {};
+      localStorage.clear();
       remote.app.reloadApp();
     },
     click(item) {

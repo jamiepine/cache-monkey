@@ -206,7 +206,7 @@ export default {
   margin: 20px;
   display: flex;
   flex-direction: column;
-  max-width: 360px;
+  max-width: 336px;
   /* overflow: hidden; */
 }
 </style>
