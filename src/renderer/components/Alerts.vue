@@ -1,7 +1,7 @@
 <template>
   <div class="alerts_container">
     <div v-for="a in alerts" :key="a.id">
-      <div :class="a.theme" class="alert">{{ a.message }}</div>
+      <div :class="a.theme" class="alert" @click="(a.link ? open(a.link): null)" v-html="a.message"></div>
     </div>
 
     <!-- <div v-bind:class="{ 'show-alert': alert, 'text-danger': hasError }" class="alert">
@@ -20,39 +20,43 @@ export default {
     };
   },
   mounted() {
-    this.$root.$on("alert", (type, message) => {
-      this[type](message);
+    this.$root.$on("alert", (type, message, link) => {
+      this[type](message, link);
     });
   },
   methods: {
-    createAlert: function(theme, message) {
-      if (this.alerts.filter(alert => alert.message === message).length > 0) {
+    createAlert: function(theme, message, link) {
+      if (this.alerts.filter(alert => alert.message === message).length <= 0) {
         var alertObject = {
           id: Math.random(),
           message: message,
-          theme: theme
+          theme: theme,
+          link: link
         };
         this.alerts.push(alertObject);
         var vm = this;
         setTimeout(function(e) {
           vm.alerts.shift();
-        }, 4000);
+        }, (link ? 12000 : 4000));
       }
     },
-    success: function(message) {
-      this.createAlert("success fadeout", message);
+    success: function(message, link) {
+      this.createAlert("success fadeout", message, link);
     },
-    error: function(message) {
-      this.createAlert("error fadeout", message);
+    error: function(message, link) {
+      this.createAlert("error fadeout", message, link);
     },
-    info: function(message) {
-      this.createAlert("info fadeout", message);
+    info: function(message, link) {
+      this.createAlert("info fadeout", message, link);
+    },
+    open(link) {
+      this.$electron.shell.openExternal(link);
     }
   }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .alerts_container {
   position: absolute;
   bottom: 0px;

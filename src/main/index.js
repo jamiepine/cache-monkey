@@ -58,6 +58,7 @@ app.on("activate", () => {
 });
 
 app.updateDownloaded = false;
+app.updateFailed = false;
 
 autoUpdater.on("update-available", info => {
   app.updateDownloading = true;
@@ -66,7 +67,13 @@ autoUpdater.on("update-available", info => {
 
 autoUpdater.on("update-downloaded", info => {
   app.updateDownloaded = true;
-  autoUpdater.quitAndInstall();
+
+  try {
+    autoUpdater.quitAndInstall();
+  } catch (error) {
+    console.error('Updated failed', error);
+    app.updateFailed = true;
+  }
 });
 
 app.reloadApp = () => {

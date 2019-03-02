@@ -157,7 +157,8 @@ export default {
     return {
       monkey: 1,
       currentFilter: false,
-      updateDownloading: false
+      updateDownloading: false,
+      updateFailed: false
     };
   },
   mounted() {
@@ -171,6 +172,18 @@ export default {
       }
       if (remote.app.updateDownloaded) {
         this.updateReady = remote.app.updateDownloaded;
+        clearInterval(interval);
+      }
+      if (remote.app.updateFailed) {
+        this.updateReady = remote.app.updateFailed;
+        this.updateFailed = remote.app.updateFailed;
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Unable to install update automatically, you can download it manually by clicking here",
+          "https://jamiepine.com/cachemonkey"
+        );
+
         clearInterval(interval);
       }
     }, 30000);
