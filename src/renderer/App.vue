@@ -359,7 +359,15 @@ export default {
           if (content) {
             for (let i of content) {
               // console.log(`${app.dir}/${i}`);
-              await fs.unlinkSync(`${app.dir}/${i}`);
+              try {
+                await fs.unlinkSync(`${app.dir}/${i}`);
+              } catch (e) {
+                this.$root.$emit(
+                  "alert",
+                  "error",
+                  `Failed to clear cache. Quit "${app.name}" and try again.`
+                );
+              }
             }
           }
         }
