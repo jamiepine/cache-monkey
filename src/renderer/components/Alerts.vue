@@ -26,16 +26,18 @@ export default {
   },
   methods: {
     createAlert: function(theme, message) {
-      var alertObject = {
-        id: Math.random(),
-        message: message,
-        theme: theme
-      };
-      this.alerts.push(alertObject);
-      var vm = this;
-      setTimeout(function(e) {
-        vm.alerts.shift();
-      }, 4000);
+      if (this.alerts.filter(alert => alert.message === message).length > 0) {
+        var alertObject = {
+          id: Math.random(),
+          message: message,
+          theme: theme
+        };
+        this.alerts.push(alertObject);
+        var vm = this;
+        setTimeout(function(e) {
+          vm.alerts.shift();
+        }, 4000);
+      }
     },
     success: function(message) {
       this.createAlert("success fadeout", message);
