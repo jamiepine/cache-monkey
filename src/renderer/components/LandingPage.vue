@@ -109,7 +109,7 @@
         v-for="(i, index) of content"
         :key="index"
         class="image"
-        @click='click(i, `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")`);'
+        @click='click(i, `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")`, index);'
         :style='{ "background-image": `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")` }'
       >
         <div class="hover-info">
@@ -187,8 +187,23 @@ export default {
         clearInterval(interval);
       }
     }, 30000);
+
+    this.$root.$on('nextItem', () => this.nextItem())
+    this.$root.$on('previousItem', () => this.previousItem())
   },
   methods: {
+    nextItem() {
+      let newIndex = this.viewing.index + 1
+      let obj = this.content[newIndex]
+      obj.index = newIndex
+      this.viewing = Object.assign(obj)
+    },
+    previousItem() {
+      let newIndex = this.viewing.index - 1
+      let obj = this.content[newIndex]
+      obj.index = newIndex
+      this.viewing = Object.assign(obj)
+    },
     initWatch() {
       this.$parent.watchBlocker = false;
       this.$parent.initWatchers();
@@ -202,8 +217,10 @@ export default {
       localStorage.clear();
       remote.app.reloadApp();
     },
-    click(item, fileDir) {
+    click(item, fileDir, index) {
       console.log(item, fileDir);
+      let obj = item;
+      item.index = index
       this.viewing = item;
       this.$root.$emit("modal", "FileView");
     },

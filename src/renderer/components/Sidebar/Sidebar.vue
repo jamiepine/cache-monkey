@@ -42,6 +42,7 @@ export default {
   },
   methods: {
     devtools() {
+      console.log(this)
       win.openDevTools();
     },
     open(link) {

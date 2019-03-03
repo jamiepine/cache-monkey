@@ -14,6 +14,24 @@
       />
     </div>
     <div class="info-area">
+
+      <div class="flex-row">
+
+      <button
+        class="coolbtn margin-vertical"
+        style="flex-grow:1;margin-right:10px;"
+        @click="$root.$emit('previousItem')"
+        v-shortkey="['arrowleft']" @shortkey="$root.$emit('previousItem')"
+      >Previous</button>
+      <button
+        class="coolbtn margin-vertical"
+        style="flex-grow:1"
+        @click="$root.$emit('nextItem')"
+        v-shortkey="['arrowright']" @shortkey="$root.$emit('nextItem')"
+      >Next</button>
+      </div>
+
+
       <div style="opacity:0.3;">Size</div>
       <div>{{bytesToSize(viewing.size)}}</div>
       <br>
@@ -38,18 +56,24 @@
         @click="open(viewing)"
       >Open File</button>
       <div style="opacity:0.3;"></div>
+
+      <div class="flex-row">
       <button
         v-tippy="$store.state.tooltipLeft"
         title="By default this will copy this file to your system's Pictures folder, but you can change this in the settings."
         @click="save(viewing)"
         class="coolbtn margin-vertical"
+        style="flex-grow:1;margin-right:10px;"
       >{{saved ? 'Done!' :'Quick Save ( ͡° ͜ʖ ͡°)'}}</button>
       <button
         v-tippy="$store.state.tooltipLeft"
         title="Choose a directory to copy this file to."
         @click="saveAs(viewing)"
         class="coolbtn margin-vertical"
+        style="flex-grow:1;"
       >{{savedAs ? 'Done!' :'Export'}}</button>
+      </div>
+
       <button
         v-tippy="$store.state.tooltipLeft"
         title="Remove this file from both the cache and the dump directories. This is a very effective gamershot."
