@@ -23,7 +23,9 @@
     </div>
     <!-- <icon :icon="['fab', 'twitter']"/> -->
     <h4>🤔 What is a cache?</h4>
-    <p>Caching is common practice by apps to help decreace server bandwidth costs and improve loadtimes. If an app can save media to your device, it need not request it from the server again.</p>
+    <p>Caching is common practice by apps to help decreace server bandwidth costs and improve loadtimes. If an app can save media to your device, it need not request it from the server again. These apps usually store the files without any metadata or even filetype. CacheMonkey takes care of discovering the original filetype and processing the cache files for preview.</p>
+    <h4>🌚 What stuff gets cached?</h4>
+    <p>Most apps will store all media that is loaded from their servers. For example, entering Discord channel will load not only the images you see with your eyes, but approximatly 6 times your screen height, even if you don't scroll up. Images that are deleted immediately after posting are still saved in your cache if they loaded to your client- which could remain there for months. In Electron's case it is limited by size.</p>
     <h4>🔑 What apps does CacheMonkey support?</h4>
     <p>In theory, anything with a "Cache" folder, if you can locate it, we should be able to convert it to the original filetype and allow you to view it with this app.</p>
     <h4>🛠 Developers, you can help!</h4>

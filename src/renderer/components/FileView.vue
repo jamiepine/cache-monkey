@@ -2,15 +2,15 @@
   <div v-if="viewing" class="file-view">
     <div class="image-view" v-if="viewing.type == 'mp4'">
       <div class="video-big">
-        <video class="player" height="100px" playsinline loop controls>
-          <source :src='`${dumpDirectory.replace(/[ ]/g, "\\ ")}/${viewing.dumpKey.replace(/[ ]/g, "\ ")}`' type="video/mp4">
+        <video class="player" height="440px"  width="370px" playsinline loop controls>
+          <source :src='`${dumpDirectory.replace(ws1, ws2)}/${viewing.dumpKey.replace(ws1, ws3)}`' type="video/mp4">
         </video>
       </div>
     </div>
     <div class="image-view" v-else>
       <div
         class="image-big"
-        :style='{ "background-image": `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${viewing.dumpKey.replace(/[ ]/g, "\ ")}")` }'
+        :style='{ "background-image": `url("file://${dumpDirectory.replace(ws1, ws2)}/${viewing.dumpKey.replace(ws1, ws3)}")` }'
       />
     </div>
     <div class="info-area">
@@ -22,12 +22,16 @@
         style="flex-grow:1;margin-right:10px;"
         @click="$root.$emit('previousItem')"
         v-shortkey="['arrowleft']" @shortkey="$root.$emit('previousItem')"
+        v-tippy="$store.state.tooltipDefault"
+        title="Arrow keys work too..."
       >Previous</button>
       <button
         class="coolbtn margin-vertical"
         style="flex-grow:1"
         @click="$root.$emit('nextItem')"
         v-shortkey="['arrowright']" @shortkey="$root.$emit('nextItem')"
+        v-tippy="$store.state.tooltipDefault"
+        title="You can use your left and right arrow keys btw"
       >Next</button>
       </div>
 
@@ -114,7 +118,10 @@ export default {
   data() {
     return {
       saved: false,
-      savedAs: false
+      savedAs: false,
+      ws1: /[ ]/g,
+      ws2: "\\ ",
+      ws3: "\ "
     };
   },
   computed: {
@@ -215,8 +222,7 @@ export default {
   right: 0;
   margin: auto;
   min-height: 200px;
-  margin-top: 100px;
-  float: left;
+
 }
 .image-big {
   height: 70vh;
