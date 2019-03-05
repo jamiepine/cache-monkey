@@ -21,8 +21,10 @@ while (true) {
                         var notFixed = true;
                         for (var i = 0; notFixed; i ++) {
                             var thing3 = thing2.slice(thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/)[0].length).toJSON().data;
-                            if (i > 1000) {console.error(`Unable to convert file successfully, a fix will come soon. File: ${fileName}`); notFixed = false;}
-                            thing3.shift();
+                            if (i > 6) {console.error(`Unable to convert file successfully, a fix will come soon. File: ${fileName}`); notFixed = false;}
+                            for (var oooo = 0; oooo < i; oooo ++) {
+                                thing3.shift();
+                            }
                             thing3 = new Buffer.from(thing3);
                             fs.writeFileSync(`./RecoveredCache/${fileName}`, thing3);
                             const buffer = readChunk.sync(`./RecoveredCache/${fileName}`, 0, fileType.minimumBytes);
