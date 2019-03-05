@@ -5,7 +5,7 @@
       <div  @click.prevent="open('https://jamiepine.com/cachemonkey')" 
       v-tippy="$store.state.tooltipBottom"
         title="If this doesn't turn green after a few minutes, click here to download update and reinstall. Your dump and settings won't be lost, don't worry!"
-      v-if="true || updateDownloading && !updateReady" class="update-box grey">New update available!
+      v-if="updateDownloading && !updateReady" class="update-box grey">New update available!
         <br>
         <small>Updating in background...</small>
       </div>
