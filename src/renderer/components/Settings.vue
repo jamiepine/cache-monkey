@@ -56,6 +56,19 @@
         style=" margin-left: 4px;"
         @click="addDiscordCanary"
       >Add Discord Canary</button>
+      <button
+        class="coolbtn margin-vertical"
+        style=" margin-left: 4px;"
+        @click="addDiscordPTB"
+      >Add Discord PTB</button>
+    </div>
+    <div class="flex-row">
+      <button class="coolbtn margin-vertical" style=" margin-left: 4px;" @click="addSlack">Add Slack</button>
+      <button
+        class="coolbtn margin-vertical"
+        style=" margin-left: 4px;"
+        @click="addNotion"
+      >Add Notion</button>
     </div>
     <br>
     <h4>Save To Pictures Directory</h4>
@@ -171,6 +184,78 @@ export default {
       if (fs.existsSync(directory)) {
         this.watchDirectories.push({
           name: "discordcanary",
+          dir: directory
+        });
+        this.watchDirectories = this.watchDirectories;
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
+    addDiscordPTB() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Roaming/discordptb/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application Support/discordptb/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      if (dupe.length > 0) return;
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "discordptb",
+          dir: directory
+        });
+        this.watchDirectories = this.watchDirectories;
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
+    addSlack() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Roaming/Slack/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application Support/Slack/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      if (dupe.length > 0) return;
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "slack",
+          dir: directory
+        });
+        this.watchDirectories = this.watchDirectories;
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
+    addNotion() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Roaming/Notion/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application Support/Notion/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      if (dupe.length > 0) return;
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "notion",
           dir: directory
         });
         this.watchDirectories = this.watchDirectories;
