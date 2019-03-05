@@ -56,6 +56,11 @@
         style=" margin-left: 4px;"
         @click="addDiscordCanary"
       >Add Discord Canary</button>
+      <button
+        class="coolbtn margin-vertical"
+        style=" margin-left: 4px;"
+        @click="addDiscordPTB"
+      >Add Discord PTB</button>
     </div>
     <br>
     <h4>Save To Pictures Directory</h4>
@@ -171,6 +176,30 @@ export default {
       if (fs.existsSync(directory)) {
         this.watchDirectories.push({
           name: "discordcanary",
+          dir: directory
+        });
+        this.watchDirectories = this.watchDirectories;
+      } else {
+        this.$root.$emit(
+          "alert",
+          "error",
+          "Directory not found! You might not have this application installed."
+        );
+      }
+    },
+    addDiscordPTB() {
+      let userDir = Path.join(os.homedir())
+        .split("\\")
+        .join("/");
+      let directory = `${userDir}/AppData/Roaming/discordptb/Cache`;
+      if (os.platform() === "darwin") {
+        directory = `${userDir}/Library/Application Support/discordptb/Cache`;
+      }
+      let dupe = this.watchDirectories.filter(item => item.dir === directory);
+      if (dupe.length > 0) return;
+      if (fs.existsSync(directory)) {
+        this.watchDirectories.push({
+          name: "discordptb",
           dir: directory
         });
         this.watchDirectories = this.watchDirectories;
