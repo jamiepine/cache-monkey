@@ -12,6 +12,7 @@
   "scripts": {
     "build:osx": "node .electron-vue/build.js && electron-builder build -m -p never",
     "build:win": "node .electron-vue/build.js && electron-builder build -w -p never",
+    "build:win32": "node .electron-vue/build.js && electron-builder build --platform win32 -p never",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
