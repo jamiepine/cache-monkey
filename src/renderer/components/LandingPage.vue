@@ -2,7 +2,10 @@
   <div id="wrapper">
     <!-- <img id="logo" src="~@/assets/logo.png" alt="electron-vue"> -->
     <div class="heading-area">
-      <div v-if="updateDownloading && !updateReady" class="update-box grey">New update available!
+      <div  @click.prevent="open('https://jamiepine.com/cachemonkey')" 
+      v-tippy="$store.state.tooltipBottom"
+        title="If this doesn't turn green after a few minutes, click here to download update and reinstall. Your dump and settings won't be lost, don't worry!"
+      v-if="true || updateDownloading && !updateReady" class="update-box grey">New update available!
         <br>
         <small>Updating in background...</small>
       </div>
@@ -192,6 +195,9 @@ export default {
     this.$root.$on('previousItem', () => this.previousItem())
   },
   methods: {
+    open(link) {
+      shell.openExternal(link);
+    },
     nextItem() {
       let newIndex = this.viewing.index + 1
       let obj = this.content[newIndex]
