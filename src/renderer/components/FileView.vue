@@ -124,6 +124,12 @@ export default {
       ws3: "\ "
     };
   },
+  watch: {
+    viewing() {
+      this.saved = false,
+      this.savedAs = false
+    }
+  },
   computed: {
     viewing() {
       return this.$store.state.viewingItem;
