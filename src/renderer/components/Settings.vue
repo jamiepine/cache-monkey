@@ -56,19 +56,19 @@
         style=" margin-left: 4px;"
         @click="addDiscordCanary"
       >Add Discord Canary</button>
-      <button
+      <!-- <button
         class="coolbtn margin-vertical"
         style=" margin-left: 4px;"
         @click="addDiscordPTB"
-      >Add Discord PTB</button>
+      >Add Discord PTB</button> -->
+      <button class="coolbtn margin-vertical" style=" margin-left: 4px;" @click="addSlack">Add Slack</button>
     </div>
     <div class="flex-row">
-      <button class="coolbtn margin-vertical" style=" margin-left: 4px;" @click="addSlack">Add Slack</button>
-      <button
+      <!-- <button
         class="coolbtn margin-vertical"
         style=" margin-left: 4px;"
         @click="addNotion"
-      >Add Notion</button>
+      >Add Notion</button> -->
     </div>
     <br>
     <h4>Save To Pictures Directory</h4>
