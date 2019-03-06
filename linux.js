@@ -12,14 +12,29 @@ while (true) {
             if (thing2.length < 3640 || thing1.toString('utf8').indexOf('https://') === -1) /* console.error('No data found in cache file.') */ return;
             else if (thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/) === null) /* console.log('Cannot find valid image or file format is invalid.') */ return;
             else {
-                var test = `${e}${thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/).slice(2).filter(v => typeof v !== 'undefined')[0]}`
-                if (fs.existsSync(`./TestFolder/${test}`)) return;
-                fs.writeFileSync(`./TestFolder/${test}`, thing2.slice(thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/)[0].length, thing2.length - 3640));
-                const buffer = readChunk.sync(`./TestFolder/${test}`, 0, fileType.minimumBytes);
+                var fileName = `${e}${thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/).slice(2).filter(v => typeof v !== 'undefined')[0]}`
+                if (fs.existsSync(`./RecoveredCache/${fileName}`)) return;
+                fs.writeFileSync(`./RecoveredCache/${fileName}`, thing2.slice(thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/)[0].length));
+                const buffer = readChunk.sync(`./RecoveredCache/${fileName}`, 0, fileType.minimumBytes);
         
-                if (fileType(buffer) === null) {
-                    console.error(`Image may have been cached corrupted, or an unknown bug is affecting the file. Filename: ${test}`);
-                }else console.log(`Successfully converted file ${test}`)
+                    if (fileType(buffer) === null) {
+                        var notFixed = true;
+                        for (var i = 0; notFixed; i ++) {
+                            var thing3 = thing2.slice(thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/)[0].length).toJSON().data;
+                            if (i > 6) {console.error(`Unable to convert file successfully, a fix will come soon. File: ${fileName}`); notFixed = false;}
+                            for (var oooo = 0; oooo < i; oooo ++) {
+                                thing3.shift();
+                            }
+                            thing3 = new Buffer.from(thing3);
+                            fs.writeFileSync(`./RecoveredCache/${fileName}`, thing3);
+                            const buffer = readChunk.sync(`./RecoveredCache/${fileName}`, 0, fileType.minimumBytes);
+
+                            if (fileType(buffer) !== null) {
+                                console.log(`Successfully converted file ${fileName}`);
+                                notFixed = false;
+                            }
+                        }
+                    }else console.log(`Successfully converted file ${fileName}`);
             }
         });
     }catch (err) {console.error(err)}
