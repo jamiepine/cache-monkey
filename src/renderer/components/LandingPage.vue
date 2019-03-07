@@ -240,7 +240,7 @@ export default {
       let tilesPastEachother = Math.floor(contentWidth / newSize+2)
       let emptySpace = contentWidth % newSize+2
       let change = emptySpace / tilesPastEachother
-      newSize += change-2.3
+      newSize += change*1.43 - 6
 
       // change width and height of images
       let tiles = document.getElementsByClassName('image')
