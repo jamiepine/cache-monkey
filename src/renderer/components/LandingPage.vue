@@ -71,10 +71,10 @@
         >{{i ? i : 'uh?'}}</div>
       </div>
       <br>
-      <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">View</div>
+      <div style="opacity:0.3;">View</div>
       <br>
       <div style="opacity:0.3; font-size: 14px;">Tile Size: </div>
-      <input style="width: 240px;" min="70" max="215" value="100" class="coolslider" @change="changeTileSize" type="range">
+      <input style="width: 240px;" id="tileSizeSlider" min="70" max="215" value="100" class="coolslider" @change="changeTileSize" type="range">
       <br>
 
       <!-- <div style="opacity:0.3;">Total Analysed:</div>
@@ -230,7 +230,10 @@ export default {
       remote.app.reloadApp();
     },
     changeTileSize(event) {
-      let newSize = Number(event.target.value)
+
+      let slider = document.getElementById('tileSizeSlider')
+
+      let newSize = Number(slider.value)
 
       // images snapping to side
       let contentWidth = document.getElementsByClassName('content')[0].offsetWidth
@@ -263,6 +266,7 @@ export default {
       return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
     },
     filterItems(type) {
+      setTimeout(() => { this.changeTileSize() }, 100)
       if (this.currentFilter == type) return (this.currentFilter = "");
       this.currentFilter = type;
     },
