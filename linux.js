@@ -26,7 +26,7 @@ while (true) {
                         var notFixed = true;
                         for (var i = 0; notFixed; i ++) {
                             var thing3 = thing2.slice(thing2.toString('utf8').match(regex)[0].length).toJSON().data;
-                            if (i > 20) notFixed = false;
+                            if (i > 50) notFixed = false;
                             for (var oooo = 0; oooo < i; oooo ++) {
                                 thing3.shift();
                             }
