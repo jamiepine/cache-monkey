@@ -74,7 +74,7 @@
       <div v-if="foundFiletypes.length > 0" style="opacity:0.3;">View</div>
       <br>
       <div style="opacity:0.3; font-size: 14px;">Tile Size: </div>
-      <input style="width: 240px;" min="80" max="215" value="100" class="coolslider" @change="changeTileSize" type="range">
+      <input style="width: 240px;" min="70" max="215" value="100" class="coolslider" @change="changeTileSize" type="range">
       <br>
 
       <!-- <div style="opacity:0.3;">Total Analysed:</div>
