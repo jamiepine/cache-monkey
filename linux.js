@@ -2,32 +2,37 @@
 const fs = require('fs');
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
+const homeDir = require('os').userInfo().homedir
+const cacheLocation = `${homeDir}/.config/discord/Cache/`
+const convertedFiles = `${homeDir}/CachedFiles/`;
+const regex = /(https?:\/\/\w*\.\w*\.?\w+\/[A-Za-z\/0-9_\-\(\)]*(\.png|\.gif|\.jpg|\.jpeg|\.mp4|\.mp3|\.webm|\.webp|\.gifv|\.woff))/
+if (!fs.existsSync(`${homeDir}/CachedFiles/`)) fs.mkdirSync(`${homeDir}/CachedFiles/`)
 
 while (true) {
     try {
-        fs.readdirSync('/home/alekeagle/.config/discord/Cache').forEach(e => {
-            if (fs.lstatSync(`/home/alekeagle/.config/discord/Cache/${e}`).isDirectory()) return;
-            var thing1 = fs.readFileSync(`/home/alekeagle/.config/discord/Cache/${e}`);
+        fs.readdirSync(cacheLocation).forEach(e => {
+            if (fs.lstatSync(`${cacheLocation}${e}`).isDirectory()) return;
+            var thing1 = fs.readFileSync(`${cacheLocation}${e}`);
             var thing2 = thing1.slice(thing1.toString('utf8').indexOf('https://'));
-            if (thing2.length < 3640 || thing1.toString('utf8').indexOf('https://') === -1) /* console.error('No data found in cache file.') */ return;
-            else if (thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/) === null) /* console.log('Cannot find valid image or file format is invalid.') */ return;
+            if (thing2.length < 3640 || thing1.toString('utf8').indexOf('https://') === -1 || thing1.toString('utf8').indexOf('HTTP/1.1') < 800) /* console.error('No data found in cache file.') */ return;
+            else if (thing2.toString('utf8').match(regex) === null) /* console.log('Cannot find valid image or file format is invalid.') */ return;
             else {
-                var fileName = `${e}${thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/).slice(2).filter(v => typeof v !== 'undefined')[0]}`
-                if (fs.existsSync(`./RecoveredCache/${fileName}`)) return;
-                fs.writeFileSync(`./RecoveredCache/${fileName}`, thing2.slice(thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/)[0].length));
-                const buffer = readChunk.sync(`./RecoveredCache/${fileName}`, 0, fileType.minimumBytes);
+                var fileName = `${e}${thing2.toString('utf8').match(regex).slice(2).filter(v => typeof v !== 'undefined')[0]}`
+                if (fs.existsSync(`${convertedFiles}${fileName}`)) return;
+                fs.writeFileSync(`${convertedFiles}${fileName}`, thing2.slice(thing2.toString('utf8').match(regex)[0].length));
+                const buffer = readChunk.sync(`${convertedFiles}${fileName}`, 0, fileType.minimumBytes);
         
                     if (fileType(buffer) === null) {
                         var notFixed = true;
                         for (var i = 0; notFixed; i ++) {
-                            var thing3 = thing2.slice(thing2.toString('utf8').match(/(https:\/\/cdn\.discordapp\.com\/avatars\/\w*\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?size=\d{3,4}|https:\/\/discordapp\.com\/assets\/\w*(\.png|\.gif|\.jpg|\.jpeg)|https:\/\/cdn\.discordapp\.com\/emojis\/\w*\/*(\.png|\.gif|\.jpg|\.jpeg)\?v=\d{1})/)[0].length).toJSON().data;
-                            if (i > 6) {console.error(`Unable to convert file successfully, a fix will come soon. File: ${fileName}`); notFixed = false;}
+                            var thing3 = thing2.slice(thing2.toString('utf8').match(regex)[0].length).toJSON().data;
+                            if (i > 50) {console.error(`This is an error your not supposed to see. A file was not successfully converted. Please make an issue at https://github.com/jamiepine/cache-monkey/issues/new and tell us what your OS is, send the file ${fileName} in ${convertedFiles} and the file ${fileName.replace(/(\.png|\.gif|\.jpg|\.jpeg|\.mp4|\.mp3|\.webm|\.webp|\.gifv)/)} in ${cacheLocation}`);notFixed = false;}
                             for (var oooo = 0; oooo < i; oooo ++) {
                                 thing3.shift();
                             }
                             thing3 = new Buffer.from(thing3);
-                            fs.writeFileSync(`./RecoveredCache/${fileName}`, thing3);
-                            const buffer = readChunk.sync(`./RecoveredCache/${fileName}`, 0, fileType.minimumBytes);
+                            fs.writeFileSync(`${convertedFiles}${fileName}`, thing3);
+                            const buffer = readChunk.sync(`${convertedFiles}${fileName}`, 0, fileType.minimumBytes);
 
                             if (fileType(buffer) !== null) {
                                 console.log(`Successfully converted file ${fileName}`);
