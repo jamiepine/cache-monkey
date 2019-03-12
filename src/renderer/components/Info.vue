@@ -37,7 +37,7 @@
       >GitHub</a>, I made it in just two days so it could use a clean-up. It's built with NodeJS, VueJS and Electron (I've disabled caching, don't worry about possible cache-ception). Massive thanks to
       <a
         href="#"
-        @click.prevent="open('https://twtter.com/TheTetrabyte')"
+        @click.prevent="open('https://twitter.com/TheTetrabyte')"
       >Tetrabyte</a> for working with me to get this app released so quickly.
     </p>
     <h4>👀 Watch me build it!</h4>
