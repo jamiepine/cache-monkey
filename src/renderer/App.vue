@@ -38,6 +38,7 @@ const rename = promisify(fs.rename);
 const stat = promisify(fs.stat);
 const chokidar = require("chokidar");
 const uuid = require("uuid");
+const regex = /(https?:\/\/\w*\.\w*\.?\w+\/[A-Za-z\/0-9_\-\(\)]*(\.png|\.gif|\.jpg|\.jpeg|\.mp4|\.mp3|\.webm|\.webp|\.gifv|\.woff))/
 
 export default {
   name: "cachemonkey",
@@ -103,6 +104,9 @@ export default {
     let discordCacheDir = `${userDir}/AppData/Roaming/discord/Cache`;
     if (os.platform() === "darwin") {
       discordCacheDir = `${userDir}/Library/Application Support/discord/Cache`;
+    }
+    if (os.platform() === 'linux') {
+      discordCacheDir = `${userDir}/.config/discord/Cache`
     }
     const discordCacheExists = await fs.existsSync(discordCacheDir);
 
@@ -286,49 +290,123 @@ export default {
       });
     },
     async processItem(directory, location, name) {
-      try {
-        const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
-        const _type = fileType(buffer);
+      if (os.platform() === 'linux') {
+        try {
+          var file = await fs.readFileSync(location);
+          file = file.slice(file.toString('utf8').match(regex)[0].length);
+          this.currentTask = `Processing ${name}`;
 
-        let extention = _type && _type.mime ? _type.mime.split("/")[1] : null;
-        if (extention && !this.foundFiletypes.includes(extention))
-          this.foundFiletypes.push(extention);
+          const stats = await stat(location);
 
-        const stats = await stat(location);
-
-        const type = _type ? _type.mime.split("/")[1] : "unknown";
-
-        let fileKey = `${directory.name}__${name}__${new Date(
-          stats["ctime"]
-        ).getTime()}`;
-
-        const fileKeyWithExtention =
-          type !== "unknown" ? `${fileKey}.${type}` : fileKey;
-
-        let result = {
-          originLocation: location,
-          dumpKey: fileKeyWithExtention,
-          type,
-          created: stats["ctime"],
-          size: stats["size"]
-        };
-        this.totalAnalysed += 1;
-
-        if (this.fileIndex.hasOwnProperty(result.dumpKey.split(".")[0])) {
-          this.currentTask = `${name} already in dump.`;
-          return;
-        } else {
-          this.currentTask = `Copying ${name} to dump.`;
+          var processing = true;
+          file = file.toJSON().data;
+          for (var i = 0; processing; i ++) {
+            var tempFile = new Buffer.from(file);
+            const buffer = tempFile.slice(0, fileType.minimumBytes);
+            if (i > 150) {
+              console.log('Could not read file.');
+              let extention = `unknown`;
+              if (extention && !this.foundFiletypes.includes(extention))
+                this.foundFiletypes.push(extention);
+              var type = 'unknown'
+              let fileKey = `${directory.name}__${name}__${new Date(
+                stats["ctime"]
+              ).getTime()}`;
+              const fileKeyWithExtention =
+                type !== "unknown" ? `${fileKey}.${type}` : fileKey;
+              let result = {
+                originLocation: location,
+                dumpKey: fileKeyWithExtention,
+                type,
+                created: stats["ctime"],
+                size: stats["size"]
+              };
+              this.totalAnalysed += 1;
+              if (this.fileIndex.hasOwnProperty(result.dumpKey.split(".")[0])) {
+                this.currentTask = `${name} already in dump.`;
+              } else {
+                this.currentTask = `Copying ${name} to dump.`;
+                this.fileIndex[fileKey] = result;
+                await fs.writeFileSync(this.dumpDirectory + "/" + fileKeyWithExtention, tempFile);
+              }
+            }
+            if (fileType(buffer)) {
+              let _type = fileType(buffer);
+              let extention = _type && _type.mime ? _type.mime.split("/")[1] : null;
+              if (extention && !this.foundFiletypes.includes(extention))
+                this.foundFiletypes.push(extention);
+              var type = _type ? _type.mime.split("/")[1] : "unknown";
+              let fileKey = `${directory.name}__${name}__${new Date(
+                stats["ctime"]
+              ).getTime()}`;
+              const fileKeyWithExtention =
+                type !== "unknown" ? `${fileKey}.${type}` : fileKey;
+              let result = {
+                originLocation: location,
+                dumpKey: fileKeyWithExtention,
+                type,
+                created: stats["ctime"],
+                size: stats["size"]
+              };
+              processing = false;
+              this.totalAnalysed += 1;
+              if (this.fileIndex.hasOwnProperty(result.dumpKey.split(".")[0])) {
+                this.currentTask = `${name} already in dump.`;
+              } else {
+                this.currentTask = `Copying ${name} to dump.`;
+                this.fileIndex[fileKey] = result;
+                await fs.writeFileSync(this.dumpDirectory + "/" + fileKeyWithExtention, tempFile);
+              }
+            }else file.shift();
+          }
+        }catch (err) {
+          console.log(err);
         }
+      }else {
+        try {
+          const buffer = readChunk.sync(location, 0, fileType.minimumBytes);
+          const _type = fileType(buffer);
 
-        this.fileIndex[fileKey] = result;
+          let extention = _type && _type.mime ? _type.mime.split("/")[1] : null;
+          if (extention && !this.foundFiletypes.includes(extention))
+            this.foundFiletypes.push(extention);
 
-        await copyFile(
-          location,
-          this.dumpDirectory + "/" + fileKeyWithExtention
-        );
-      } catch (err) {
-        console.log(err);
+          const stats = await stat(location);
+
+          var type = _type ? _type.mime.split("/")[1] : "unknown";
+
+          let fileKey = `${directory.name}__${name}__${new Date(
+            stats["ctime"]
+          ).getTime()}`;
+
+          const fileKeyWithExtention =
+            type !== "unknown" ? `${fileKey}.${type}` : fileKey;
+
+          let result = {
+            originLocation: location,
+            dumpKey: fileKeyWithExtention,
+            type,
+            created: stats["ctime"],
+            size: stats["size"]
+          };
+          this.totalAnalysed += 1;
+
+          if (this.fileIndex.hasOwnProperty(result.dumpKey.split(".")[0])) {
+            this.currentTask = `${name} already in dump.`;
+            return;
+          } else {
+            this.currentTask = `Copying ${name} to dump.`;
+          }
+
+          this.fileIndex[fileKey] = result;
+
+          await copyFile(
+            location,
+            this.dumpDirectory + "/" + fileKeyWithExtention
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
     },
     purgeDump() {

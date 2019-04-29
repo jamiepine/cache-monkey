@@ -1,6 +1,6 @@
 {
   "name": "cache-monkey",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Ah thats hot.",
   "author": "Jamie Pine",
   "repository": {
@@ -12,6 +12,7 @@
   "scripts": {
     "build:osx": "node .electron-vue/build.js && electron-builder build -m -p never",
     "build:win": "node .electron-vue/build.js && electron-builder build -w --x64 --ia32 -p never",
+    "build:lin": "node .electron-vue/build.js && electron-builder build -l --x64 -p never",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -63,6 +64,13 @@
       "icon": "build/icons/icon.ico"
     },
     "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "snap"
+      ],
+      "maintainer": "AlekEagle",
+      "category": "Utility",
       "icon": "build/icons"
     }
   },
@@ -117,7 +125,7 @@
     "del": "^3.0.0",
     "devtron": "^1.4.0",
     "electron": "^4.0.6",
-    "electron-builder": "^20.19.2",
+    "electron-builder": "^20.40.2",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint": "^4.19.1",
@@ -142,7 +150,7 @@
     "mocha": "^5.2.0",
     "multispinner": "^0.2.1",
     "node-loader": "^0.6.0",
-    "node-sass": "^4.9.2",
+    "node-sass": "^4.12.0",
     "sass-loader": "^7.0.3",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
