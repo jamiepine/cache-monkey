@@ -72,7 +72,7 @@
     </div>
     <br>
     <h4>Save To Pictures Directory</h4>
-    <small>This isn't important, but this is the direcotry that the "Save to Pictures" button copies the file to. Good for efficiently nabbing memes... and stuff.</small>
+    <small>This isn't important, but this is the directory that the "Save to Pictures" button copies the file to. Good for efficiently nabbing memes... and stuff.</small>
     <div class="flex-row">
       <Input
         style="margin-right: 5px;"
@@ -155,6 +155,9 @@ export default {
       if (os.platform() === "darwin") {
         directory = `${userDir}/Library/Application Support/discord/Cache`;
       }
+      if (os.platform() === 'linux') {
+        directory = `${userDir}/.config/discord/Cache`
+      }
       let dupe = this.watchDirectories.filter(item => item.dir === directory);
       if (dupe.length > 0) return;
       if (fs.existsSync(directory)) {
@@ -178,6 +181,9 @@ export default {
       let directory = `${userDir}/AppData/Roaming/discordcanary/Cache`;
       if (os.platform() === "darwin") {
         directory = `${userDir}/Library/Application Support/discordcanary/Cache`;
+      }
+      if (os.platform() === 'linux') {
+        directory = `${userDir}/.config/discordcanary/Cache`
       }
       let dupe = this.watchDirectories.filter(item => item.dir === directory);
       if (dupe.length > 0) return;
@@ -203,6 +209,9 @@ export default {
       if (os.platform() === "darwin") {
         directory = `${userDir}/Library/Application Support/discordptb/Cache`;
       }
+      if (os.platform() === 'linux') {
+        directory = `${userDir}/.config/discordptb/Cache`
+      }
       let dupe = this.watchDirectories.filter(item => item.dir === directory);
       if (dupe.length > 0) return;
       if (fs.existsSync(directory)) {
@@ -226,6 +235,9 @@ export default {
       let directory = `${userDir}/AppData/Roaming/Slack/Cache`;
       if (os.platform() === "darwin") {
         directory = `${userDir}/Library/Application Support/Slack/Cache`;
+      }
+      if (os.platform() === 'linux') {
+        directory = `${userDir}/.config/Slack/Cache`
       }
       let dupe = this.watchDirectories.filter(item => item.dir === directory);
       if (dupe.length > 0) return;
@@ -251,6 +263,9 @@ export default {
       if (os.platform() === "darwin") {
         directory = `${userDir}/Library/Application Support/Notion/Cache`;
       }
+      if (os.platform() === 'linux') {
+        directory = `${userDir}/.config/Notion/Cache`
+      }
       let dupe = this.watchDirectories.filter(item => item.dir === directory);
       if (dupe.length > 0) return;
       if (fs.existsSync(directory)) {
@@ -274,6 +289,9 @@ export default {
       let directory = `${userDir}/AppData/Local/Google/Chrome/User Data/Default/Cache`;
       if (os.platform() === "darwin") {
         directory = `${userDir}/Library/Application\ Support/Google/Chrome/Default/Application\ Cache/Cache`;
+      }
+      if (os.platform() === 'linux') {
+        directory = `${userDir}/.cache/google-chrome/Default/Cache/`
       }
       let dupe = this.watchDirectories.filter(item => item.dir === directory);
       console.log(dupe);
