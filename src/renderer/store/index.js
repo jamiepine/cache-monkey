@@ -23,6 +23,7 @@ export default new Vuex.Store({
     viewingItem: false,
     picsDir: "",
     showModel: false,
+    showConfirmModel: false,
     // task tracking
     currentTask: "Ready.",
     totalAnalysing: 0,
