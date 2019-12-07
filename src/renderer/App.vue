@@ -9,6 +9,7 @@
     <div id="app">
       <Panel/>
       <Modal/>
+      <ConfirmModal/>
       <router-view></router-view>
     </div>
   </div>
@@ -23,6 +24,7 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import { mapGetters, mapState } from "vuex";
 import drivelist from "drivelist";
 import Modal from "./components/Modal";
+import ConfirmModal from "./components/ConfirmModal";
 import { promisify } from "util";
 const remote = require("electron").remote;
 const dialoge = remote.dialog;
@@ -46,6 +48,7 @@ export default {
     Sidebar,
     Panel,
     Modal,
+    ConfirmModal,
     TrafficLights,
     WindowsButtons,
     Alerts
@@ -453,10 +456,17 @@ export default {
         resolve();
       });
     },
-    async purgeBoth() {
+    async confirmPurgeBoth() {
+      console.log("confirmed purge")
       await this.purgeDump();
       await this.purgeCache();
       this.currentTask = "Everything is gone :)";
+      this.$root.$emit("closeConfirmModal", "FileView");
+
+    },
+
+    purgeBoth() {
+      this.$root.$emit("confirmModal", "FileView");
     },
     // this method appends a <style> element with the current theme varibales at the end of the <body>
     initGlobalStyleVariables() {
@@ -521,6 +531,14 @@ export default {
       },
       set(value) {
         this.$store.state.showModel = value;
+      }
+    },
+    showConfirmModel: {
+      get() {
+        return this.$store.state.showConfirmModel;
+      },
+      set(value) {
+        this.$store.state.showConfirmModel = value;
       }
     },
     picsDir: {
@@ -611,6 +629,13 @@ export default {
     },
     showModel() {
       if (this.showModel) {
+        document.body.classList.add("hidden");
+      } else {
+        document.body.classList.remove("hidden");
+      }
+    },
+    showConfirmModel() {
+      if (this.showConfirmModel) {
         document.body.classList.add("hidden");
       } else {
         document.body.classList.remove("hidden");

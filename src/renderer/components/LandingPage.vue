@@ -205,6 +205,7 @@ export default {
       this.viewing = Object.assign(obj)
     },
     previousItem() {
+      if (this.viewing.index === 0) return; // To stop throwing undefined error when on element 0
       let newIndex = this.viewing.index - 1
       let obj = this.content[newIndex]
       obj.index = newIndex
