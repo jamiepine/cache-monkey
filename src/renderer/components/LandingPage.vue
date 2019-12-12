@@ -70,6 +70,12 @@
           @click="filterItems(i)"
         >{{i ? i : 'uh?'}}</div>
       </div>
+      <br>
+      <div style="opacity:0.3;">View</div>
+      <br>
+      <div style="opacity:0.3; font-size: 14px;">Tile Size: </div>
+      <input style="width: 240px;" id="tileSizeSlider" min="70" max="215" value="100" class="coolslider" @change="changeTileSize" type="range">
+      <br>
 
       <!-- <div style="opacity:0.3;">Total Analysed:</div>
       <b>{{totalAnalysed}}/{{totalAnalysing}}</b>
@@ -224,6 +230,26 @@ export default {
       localStorage.clear();
       remote.app.reloadApp();
     },
+    changeTileSize(event) {
+
+      let slider = document.getElementById('tileSizeSlider')
+
+      let newSize = Number(slider.value)
+
+      // images snapping to side
+      let contentWidth = document.getElementsByClassName('content')[0].offsetWidth
+      let tilesPastEachother = Math.floor(contentWidth / newSize+2)
+      let emptySpace = contentWidth % newSize+2
+      let change = emptySpace / tilesPastEachother
+      newSize += change*1.43 - 6
+
+      // change width and height of images
+      let tiles = document.getElementsByClassName('image')
+      for(let i = 0; i < tiles.length; i++) {
+        tiles[i].style.width = newSize+'px'
+        tiles[i].style.height = newSize+'px'
+      }
+    },
     click(item, fileDir, index) {
       console.log(item, fileDir);
       let obj = item;
@@ -241,6 +267,7 @@ export default {
       return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
     },
     filterItems(type) {
+      setTimeout(() => { this.changeTileSize() }, 100)
       if (this.currentFilter == type) return (this.currentFilter = "");
       this.currentFilter = type;
     },
@@ -534,5 +561,24 @@ main > div {
     min-width: 100px;
     margin-right: 10px;
   }
+}
+
+.coolslider {
+  -webkit-appearance: none;
+  margin-top: 5px;
+  width: 100%;
+  height: 20px;
+  background: #202020;
+  border-radius: 5px;
+  outline: none;
+}
+
+.coolslider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
 }
 </style>
