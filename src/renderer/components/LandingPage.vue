@@ -71,6 +71,12 @@
         >{{i ? i : 'uh?'}}</div>
       </div>
 
+      <div style="opacity:0.3; margin-top: 1rem;">List Type ({{gridType}})</div>
+      <div style="width:230px;" class="flex">
+        <button class="list-types-button" @click="changeList('grid')"><img width="17px" src="../assets/grid.svg"></button>
+        <button class="list-types-button" @click="changeList('rows')"><img width="17px" src="../assets/list.svg"></button>
+      </div>
+
       <!-- <div style="opacity:0.3;">Total Analysed:</div>
       <b>{{totalAnalysed}}/{{totalAnalysing}}</b>
       <div style="opacity:0.3;">dumpScanComplete:</div>
@@ -108,7 +114,24 @@
       <div></div>
     </div>
     <div class="content">
+      <div class="item-row" v-if="gridType === 'rows'" v-for="(i, index) of content" :key="index" @click='click(i, `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")`, index);'>
+        <div class="item-image" :style='{ "background-image": `url("file://${dumpDirectory.replace(/[ ]/g, "\\ ")}/${i.dumpKey.replace(/[ ]/g, "\ ")}")` }'></div>
+        
+        <div style="flex: 1; width: 250px; display: flex; justify-content: center;">
+          <div class="item-info" v-if="i.type">
+            <div class="header">File Type</div>
+            <div class="value">{{i.type}}</div>
+          </div>
+
+          <div class="item-info" v-if="i.size">
+            <div class="header">File Size</div>
+            <div class="value">{{bytesToSize(i.size)}}</div>
+          </div>
+        </div>
+
+      </div>
       <div
+        v-if="gridType === 'grid' || gridType === null"
         v-for="(i, index) of content"
         :key="index"
         class="image"
@@ -121,7 +144,7 @@
           <!-- {{bytesToSize(i.size)}} -->
         </div>
       </div>
-    </div>
+    </div> 
     <!-- <div class="image" :style="{ 'background-image': `url(${test})` }"></div>
     {{test}}-->
     <br>
@@ -159,6 +182,7 @@ export default {
   data() {
     return {
       monkey: 1,
+      gridType: localStorage.getItem('gridType'),
       currentFilter: false,
       updateDownloading: false,
       updateFailed: false
@@ -195,6 +219,11 @@ export default {
     this.$root.$on('previousItem', () => this.previousItem())
   },
   methods: {
+    changeList(type) {
+      localStorage.setItem("gridType", type)
+      this.gridType = type;
+      console.log("Changing list type to " + type)
+    },
     open(link) {
       shell.openExternal(link);
     },
@@ -489,6 +518,7 @@ body {
 .content {
   margin-left: 360px;
   margin-top: 25px;
+  width: 100%;
 }
 #logo {
   height: auto;
@@ -534,5 +564,64 @@ main > div {
     min-width: 100px;
     margin-right: 10px;
   }
+}
+
+.item-row {
+  float: left;
+  background: var(--main);
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  border-radius: 6px;
+  display: flex;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  .item-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.5rem;
+
+    .header {
+      opacity: 0.2;
+    }
+
+    .value {
+      opacity: 0.5;
+    }
+  }
+
+
+  .item-image {
+    width: 50px;
+    height: 50px;
+    margin: 1px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    background: var(--background);
+    background-size: cover;
+    cursor: pointer;
+    position: relative;
+    /* transition: 100ms; */
+  }
+
+}
+.list-types-button {
+  background: var(--box);
+  fill: var(--text);
+  font-weight: 600;
+  border: none;
+  font-size: 13px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 200ms;
+  outline: none;
+  position: relative;
+  text-align: center;
+  padding: 10px;
+  margin-right: 0.5rem;
 }
 </style>
