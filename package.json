@@ -86,7 +86,7 @@
     "drivelist": "^6.4.6",
     "electron-log": "^3.0.1",
     "electron-updater": "^4.0.6",
-    "file-type": "^10.8.0",
+    "file-type": "^16.5.4",
     "font-awesome": "^4.7.0",
     "moment": "^2.24.0",
     "nanoid": "^2.0.1",
